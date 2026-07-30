@@ -227,7 +227,7 @@
     flex:0 0 18px;height:18px;
     display:flex;align-items:center;justify-content:center;
     font-family:var(--font-body);font-size:12px;color:var(--ink-soft);opacity:0.5;
-    scroll-snap-align:center;
+    scroll-snap-align:center;white-space:nowrap;
     transition:color .15s ease, font-size .15s ease, opacity .15s ease;
   }
   .kt-ratio-item.active{
@@ -421,6 +421,40 @@
     font-size:11px;color:#8A6D1F;background:#FFF6DE;border-radius:10px;
     padding:8px 12px;margin-bottom:14px;line-height:1.5;
   }
+  .kt-cphoto-grid{
+    display:flex;flex-wrap:wrap;gap:8px;
+  }
+  .kt-cphoto-thumb{
+    position:relative;width:84px;height:84px;border-radius:12px;overflow:hidden;
+    cursor:pointer;background:var(--accent-soft);flex:0 0 auto;
+  }
+  .kt-cphoto-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .kt-cphoto-thumb .kt-cphoto-date{
+    position:absolute;bottom:0;left:0;right:0;font-size:9px;text-align:center;
+    background:rgba(74,51,88,0.65);color:#fff;padding:2px 0;
+  }
+  .kt-cphoto-add{
+    width:84px;height:84px;border-radius:12px;flex:0 0 auto;
+    border:1.5px dashed var(--line);background:var(--paper);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:var(--ink-soft);font-size:11px;cursor:pointer;gap:4px;
+  }
+  .kt-cphoto-add .kt-plus{font-size:20px;line-height:1;}
+  .kt-cphoto-empty{font-size:12px;color:var(--ink-soft);padding:4px 2px 10px;}
+  .kt-cphoto-lightbox-bg{
+    position:fixed;inset:0;background:rgba(20,15,20,0.85);z-index:200;
+    display:flex;align-items:center;justify-content:center;padding:24px;
+    flex-direction:column;gap:14px;
+  }
+  .kt-cphoto-lightbox-bg img{max-width:100%;max-height:70vh;border-radius:12px;display:block;}
+  .kt-cphoto-lightbox-meta{color:#fff;font-size:12px;text-align:center;}
+  .kt-cphoto-lightbox-actions{display:flex;gap:10px;}
+  .kt-cphoto-lightbox-actions button{
+    border:none;border-radius:20px;padding:9px 18px;font-size:12.5px;font-weight:700;cursor:pointer;
+    font-family:var(--font-body);
+  }
+  .kt-cphoto-lightbox-actions .kt-cphoto-close-btn{background:rgba(255,255,255,0.18);color:#fff;}
+  .kt-cphoto-lightbox-actions .kt-cphoto-del-btn{background:#fff;color:#C0396B;}
   .kt-interval-note{
     margin-top:10px;
     font-size:12.5px;
@@ -490,7 +524,7 @@
       <div class="kt-title">顧客カルテ <span id="karte-sync-status" style="font-size:11px;font-family:sans-serif;color:var(--sage);font-weight:400;margin-left:8px;letter-spacing:0;"></span></div>
       <div class="kt-search">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input id="search-input" type="text" placeholder="カルテNo. または お名前（かな可）で検索" oninput="renderList()">
+        <input id="search-input" type="text" autocomplete="off" placeholder="カルテNo. または お名前（かな可）で検索" oninput="renderList()">
       </div>
       <div class="kt-indexrow">
         <div class="kt-gyou-scroll" id="gyou-chips"></div>
@@ -521,6 +555,7 @@
     </div>
     <div class="kt-scroll" id="detail-scroll">
       <div class="kt-card" id="detail-info-card"></div>
+      <div class="kt-card" id="customer-photos-card"></div>
       <div class="kt-card-label" style="margin:4px 0 10px 2px;">施術履歴</div>
       <div id="history-list"></div>
     </div>
@@ -542,15 +577,15 @@
         </div>
         <div class="kt-field">
           <label>お名前（漢字）<span style="color:var(--accent);">＊必須</span></label>
-          <input id="cf-name" placeholder="例）山田 花子">
+          <input id="cf-name" autocomplete="off" placeholder="例）山田 花子">
         </div>
         <div class="kt-field">
           <label>フリガナ</label>
-          <input id="cf-kana" placeholder="例）ヤマダ ハナコ">
+          <input id="cf-kana" autocomplete="off" placeholder="例）ヤマダ ハナコ">
         </div>
         <div class="kt-field">
           <label>電話番号</label>
-          <input id="cf-phone" type="tel" placeholder="090-0000-0000">
+          <input id="cf-phone" type="tel" autocomplete="off" placeholder="090-0000-0000">
         </div>
         <div class="kt-field">
           <label>メモ</label>
@@ -750,7 +785,7 @@
           <label>お支払い料金</label>
           <div style="position:relative;">
             <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--ink-soft);font-size:15px;">¥</span>
-            <input id="tf-price" type="number" inputmode="numeric" min="0" step="100" placeholder="例）8800" style="padding-left:28px;">
+            <input id="tf-price" type="number" inputmode="numeric" min="0" step="100" autocomplete="off" placeholder="例）8800" style="padding-left:28px;">
           </div>
         </div>
       </div>
@@ -898,6 +933,7 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     customers: [],           // [{id,no,name,kana,phone,memo,createdAt}]
     currentCustomerId: null,
     currentTreatments: [],
+    currentCustomerPhotos: [],
     editingCustomerId: null, // null = new
     editingTreatmentId: null, // null = new
     selectedGyou: null,       // 'あ' | 'か' | ... | null(すべて)
@@ -1002,6 +1038,16 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
   async function saveTreatmentsFor(customerId, arr){
     try{ await window.storage.set('treatments:'+customerId, JSON.stringify(arr), false); }
     catch(e){ console.error('save treatments failed', e); }
+  }
+  async function loadCustomerPhotos(customerId){
+    try{
+      var r = await window.storage.get('customer-photos:'+customerId, false);
+      return r && r.value ? JSON.parse(r.value) : [];
+    }catch(e){ return []; }
+  }
+  async function saveCustomerPhotosFor(customerId, arr){
+    try{ await window.storage.set('customer-photos:'+customerId, JSON.stringify(arr), false); }
+    catch(e){ console.error('save customer photos failed', e); }
   }
   async function loadLegacyMenuItems(){
     try{
@@ -1231,11 +1277,14 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     infoHtml += 'メモ：' + (c.memo ? escapeHtml(c.memo).replace(/\n/g,'<br>') : 'なし');
     infoHtml += '</div>';
     document.getElementById('detail-info-card').innerHTML = infoHtml;
+    document.getElementById('customer-photos-card').innerHTML = '<div class="kt-card-label">過去情報</div><div class="kt-cphoto-empty">読み込み中…</div>';
 
     showScreen('screen-detail');
     document.getElementById('history-list').innerHTML = '<div class="kt-history-empty-note">読み込み中…</div>';
     state.currentTreatments = await loadTreatments(id);
     renderHistory();
+    state.currentCustomerPhotos = await loadCustomerPhotos(id);
+    renderCustomerPhotosCard();
   };
 
   function renderHistory(){
@@ -1274,6 +1323,94 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     });
     el.innerHTML = html;
   }
+
+  // ---------- 顧客情報：過去情報（施術記録とは独立した、顧客プロフィール直下の写真ログ） ----------
+  var MAX_CUSTOMER_PHOTO_BYTES = 12 * 1024 * 1024;
+  var uploadingCustomerPhoto = false;
+
+  function renderCustomerPhotosCard(){
+    var card = document.getElementById('customer-photos-card');
+    if(!card) return;
+    var photos = state.currentCustomerPhotos.slice().sort(function(a,b){ return (b.date||'') < (a.date||'') ? -1 : 1; });
+    var hiddenInput = '<input type="file" accept="image/*" id="customerPhotoFileInput" style="display:none" onchange="onCustomerPhotoSelected(this)">';
+    var html = '<div class="kt-card-label">過去情報</div>' + hiddenInput;
+    html += '<div class="kt-cphoto-grid">';
+    html += '<div class="kt-cphoto-add" onclick="triggerCustomerPhotoUpload()">' +
+      (uploadingCustomerPhoto ? '<span>…</span>' : '<span class="kt-plus">＋</span><span>写真を追加</span>') +
+      '</div>';
+    photos.forEach(function(p){
+      html += '<div class="kt-cphoto-thumb" onclick="openCustomerPhotoLightbox(\''+p.id+'\')">' +
+        '<img src="'+p.dataUrl+'">' +
+        '<div class="kt-cphoto-date">'+fmtDate(p.date)+'</div>' +
+      '</div>';
+    });
+    html += '</div>';
+    if(photos.length === 0){
+      html += '<div class="kt-cphoto-empty">アレルギー確認・過去のスタイルなど、施術と紐づかない写真を保存できます</div>';
+    }
+    card.innerHTML = html;
+  }
+
+  window.triggerCustomerPhotoUpload = function(){
+    if(uploadingCustomerPhoto) return;
+    var input = document.getElementById('customerPhotoFileInput');
+    if(input) input.click();
+  };
+
+  window.onCustomerPhotoSelected = async function(inputEl){
+    var file = inputEl.files && inputEl.files[0];
+    if(!file) return;
+    if(!file.type.startsWith('image/')){
+      toast('画像ファイルを選択してください');
+      inputEl.value = '';
+      return;
+    }
+    if(file.size > MAX_CUSTOMER_PHOTO_BYTES){
+      toast('ファイルサイズが大きすぎます');
+      inputEl.value = '';
+      return;
+    }
+    uploadingCustomerPhoto = true;
+    renderCustomerPhotosCard();
+    try{
+      var dataUrl = await compressImage(file);
+      var photo = { id: 'cp_'+Date.now()+'_'+Math.floor(Math.random()*1000), dataUrl: dataUrl, date: todayStr() };
+      state.currentCustomerPhotos.push(photo);
+      await saveCustomerPhotosFor(state.currentCustomerId, state.currentCustomerPhotos);
+      toast('写真を追加しました');
+    }catch(e){
+      toast('写真の読み込みに失敗しました');
+    }
+    uploadingCustomerPhoto = false;
+    inputEl.value = '';
+    renderCustomerPhotosCard();
+  };
+
+  window.openCustomerPhotoLightbox = function(photoId){
+    var p = state.currentCustomerPhotos.find(function(x){ return x.id === photoId; });
+    if(!p) return;
+    var bg = document.createElement('div');
+    bg.className = 'kt-cphoto-lightbox-bg';
+    bg.onclick = function(e){ if(e.target === bg) bg.remove(); };
+    bg.innerHTML =
+      '<img src="'+p.dataUrl+'">' +
+      '<div class="kt-cphoto-lightbox-meta">'+fmtDate(p.date)+'</div>' +
+      '<div class="kt-cphoto-lightbox-actions">' +
+        '<button type="button" class="kt-cphoto-close-btn" onclick="this.closest(\'.kt-cphoto-lightbox-bg\').remove()">閉じる</button>' +
+        '<button type="button" class="kt-cphoto-del-btn" onclick="deleteCustomerPhotoConfirm(\''+p.id+'\')">削除</button>' +
+      '</div>';
+    document.body.appendChild(bg);
+  };
+
+  window.deleteCustomerPhotoConfirm = async function(photoId){
+    if(!confirm('この写真を削除しますか？')) return;
+    state.currentCustomerPhotos = state.currentCustomerPhotos.filter(function(x){ return x.id !== photoId; });
+    await saveCustomerPhotosFor(state.currentCustomerId, state.currentCustomerPhotos);
+    var bg = document.querySelector('.kt-cphoto-lightbox-bg');
+    if(bg) bg.remove();
+    renderCustomerPhotosCard();
+    toast('削除しました');
+  };
 
   // ---------- CUSTOMER form ----------
   window.openNewCustomer = async function(){
@@ -1351,6 +1488,7 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     state.customers = state.customers.filter(function(x){ return x.id !== id; });
     await saveIndex(state.customers);
     try{ await window.storage.delete('treatments:'+id, false); }catch(e){}
+    try{ await window.storage.delete('customer-photos:'+id, false); }catch(e){}
     toast('削除しました');
     goToList();
   };
@@ -1653,8 +1791,7 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
   };
 
   // ---------- 薬剤名・比率：追加編集可能な記入枠 ----------
-  var RATIO_MIN = 1;
-  var RATIO_MAX = 10;
+  var RATIO_VALUES = ['1','2','3','4','5','6','7','8','9','10','1%','2%','5%','10%','15%','20%'];
   var ratioScrollDebounce = {};
 
   function renderRecipeRows(){
@@ -1682,15 +1819,15 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     var itemH = 18;
     var pad = Math.max(0, (wrapHeight - itemH) / 2);
     var html = '<div style="flex:0 0 '+pad+'px;"></div>';
-    for(var n = RATIO_MIN; n <= RATIO_MAX; n++){
-      html += '<div class="kt-ratio-item" data-val="'+n+'">'+n+'</div>';
-    }
+    RATIO_VALUES.forEach(function(v){
+      html += '<div class="kt-ratio-item" data-val="'+v+'">'+v+'</div>';
+    });
     html += '<div style="flex:0 0 '+pad+'px;"></div>';
     track.innerHTML = html;
     track.onscroll = function(){ onRatioScroll(rowIndex); };
 
-    var current = parseInt(state.recipeRows[rowIndex] ? state.recipeRows[rowIndex].ratio : '', 10);
-    if(!current || current < RATIO_MIN || current > RATIO_MAX) current = RATIO_MIN;
+    var current = state.recipeRows[rowIndex] ? String(state.recipeRows[rowIndex].ratio||'') : '';
+    if(RATIO_VALUES.indexOf(current) === -1) current = RATIO_VALUES[0];
     var item = track.querySelector('.kt-ratio-item[data-val="'+current+'"]');
     if(item){ track.scrollTop = item.offsetTop + item.offsetHeight / 2 - wrap.offsetHeight / 2; }
     highlightRatioItem(rowIndex, true);
@@ -1785,15 +1922,15 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     var itemH = 18;
     var pad = Math.max(0, (wrapHeight - itemH) / 2);
     var html = '<div style="flex:0 0 '+pad+'px;"></div>';
-    for(var n = RATIO_MIN; n <= RATIO_MAX; n++){
-      html += '<div class="kt-ratio-item" data-val="'+n+'">'+n+'</div>';
-    }
+    RATIO_VALUES.forEach(function(v){
+      html += '<div class="kt-ratio-item" data-val="'+v+'">'+v+'</div>';
+    });
     html += '<div style="flex:0 0 '+pad+'px;"></div>';
     track.innerHTML = html;
     track.onscroll = function(){ onRatioScroll2(rowIndex); };
 
-    var current = parseInt(state.recipeRows2[rowIndex] ? state.recipeRows2[rowIndex].ratio : '', 10);
-    if(!current || current < RATIO_MIN || current > RATIO_MAX) current = RATIO_MIN;
+    var current = state.recipeRows2[rowIndex] ? String(state.recipeRows2[rowIndex].ratio||'') : '';
+    if(RATIO_VALUES.indexOf(current) === -1) current = RATIO_VALUES[0];
     var item = track.querySelector('.kt-ratio-item[data-val="'+current+'"]');
     if(item){ track.scrollTop = item.offsetTop + item.offsetHeight / 2 - wrap.offsetHeight / 2; }
     highlightRatioItem2(rowIndex, true);
