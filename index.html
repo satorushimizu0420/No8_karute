@@ -811,7 +811,7 @@
 
 /* ====== GAS multi-device storage (with localStorage fallback) ====== */
 /* ===== GAS_URLにデプロイしたウェブアプリのURLを貼り付けてください ===== */
-var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7NMMBiygdojfdv1Ykp75cbYhwzAgFEDUuB86L1nEtGHV9uUp1sQ/exec";
+var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
 
 (function(){
   var _cache = {};
@@ -839,15 +839,17 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
 
   function loadFromGAS(){
     return new Promise(function(resolve){
+      // まずローカル保存分を必ず読み込んでおく（サーバー側に無いキーでも消えないように）
+      loadFromLS();
       if(!KARTE_GAS_URL || KARTE_GAS_URL.indexOf('http')!==0){
-        loadFromLS(); _cacheLoaded=true; resolve(); return;
+        _cacheLoaded=true; resolve(); return;
       }
       setSyncStatus('同期中…');
       var done=false;
       var cb='karteCb_'+Date.now()+'_'+Math.floor(Math.random()*9999);
       var t=setTimeout(function(){
         if(!done){ done=true; delete window[cb];
-          loadFromLS(); _cacheLoaded=true; setSyncStatus(''); resolve(); }
+          _cacheLoaded=true; setSyncStatus(''); resolve(); }
       },6000);
       window[cb]=function(data){
         clearTimeout(t);
@@ -866,7 +868,7 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
       sc.onerror=function(){
         clearTimeout(t);
         if(!done){ done=true; delete window[cb];
-          loadFromLS(); _cacheLoaded=true; setSyncStatus('オフライン'); resolve(); }
+          _cacheLoaded=true; setSyncStatus('オフライン'); resolve(); }
       };
       document.head.appendChild(sc);
     });
