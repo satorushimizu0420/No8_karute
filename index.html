@@ -400,7 +400,7 @@
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:6px;cursor:pointer;position:relative;overflow:hidden;background:var(--paper);
   }
-  .kt-photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .kt-photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:pointer;}
   .kt-photo-slot .kt-photo-slot-label{
     position:absolute;bottom:6px;left:6px;font-size:10px;background:rgba(74,59,70,0.65);color:#fff;
     padding:2px 8px;border-radius:20px;z-index:2;
@@ -412,7 +412,7 @@
   .kt-photo-slot .kt-photo-change-btn{
     position:absolute;bottom:6px;left:0;right:0;text-align:center;
     font-size:10px;color:#fff;background:rgba(74,51,88,0.72);
-    padding:3px 0;z-index:2;
+    padding:3px 0;z-index:2;cursor:pointer;
   }
 
   .kt-toast{
@@ -694,24 +694,24 @@
       <div class="kt-card">
         <div class="kt-card-label">写真（持参スタイル / ビフォー / アフター）</div>
         <div class="kt-photo-picker">
-          <label class="kt-photo-slot" id="slot-style">
+          <div class="kt-photo-slot" id="slot-style" onclick="onPhotoSlotClick('style')">
             <span class="kt-photo-slot-label kt-photo-slot-label-style">持参</span>
             <span class="kt-plus">📎</span>
             <span class="kt-plus-label">ご希望の<br>スタイル写真</span>
-            <input type="file" accept="image/*" onchange="handlePhoto(event,'style')">
-          </label>
-          <label class="kt-photo-slot" id="slot-before">
+            <input type="file" accept="image/*" id="photoFile-style" onchange="handlePhoto(event,'style')">
+          </div>
+          <div class="kt-photo-slot" id="slot-before" onclick="onPhotoSlotClick('before')">
             <span class="kt-photo-slot-label">BEFORE</span>
             <span class="kt-plus">📷</span>
             <span class="kt-plus-label">タップして撮影／選択</span>
-            <input type="file" accept="image/*" capture="environment" onchange="handlePhoto(event,'before')">
-          </label>
-          <label class="kt-photo-slot" id="slot-after">
+            <input type="file" accept="image/*" capture="environment" id="photoFile-before" onchange="handlePhoto(event,'before')">
+          </div>
+          <div class="kt-photo-slot" id="slot-after" onclick="onPhotoSlotClick('after')">
             <span class="kt-photo-slot-label">AFTER</span>
             <span class="kt-plus">📷</span>
             <span class="kt-plus-label">タップして撮影／選択</span>
-            <input type="file" accept="image/*" capture="environment" onchange="handlePhoto(event,'after')">
-          </label>
+            <input type="file" accept="image/*" capture="environment" id="photoFile-after" onchange="handlePhoto(event,'after')">
+          </div>
         </div>
       </div>
 
@@ -784,6 +784,16 @@
           </div>
         </div>
 
+        <div class="kt-field" style="margin-top:16px;margin-bottom:0;">
+          <label>タイム（放置時間）</label>
+          <div class="kt-time-picker-wrap">
+            <div class="kt-time-picker-track" id="time-picker-track"></div>
+            <div class="kt-time-picker-indicator"></div>
+          </div>
+          <div class="kt-time-picker-value" id="time-picker-value">スクロールして選択（〜120分）</div>
+          <input type="hidden" id="tf-time">
+        </div>
+
         <button type="button" class="kt-menu-add-btn" style="width:100%;margin-top:16px;" onclick="togglePage2()" id="page2-toggle-btn">＋ 2回目のカラーを追加</button>
 
         <div id="page2-section" style="display:none;">
@@ -806,18 +816,6 @@
           <input type="hidden" id="tf-time-2">
 
           <button type="button" class="kt-menu-reset-btn" style="width:100%;margin-top:14px;padding:10px;" onclick="removePage2()">2回目を削除</button>
-        </div>
-      </div>
-
-      <div class="kt-card">
-        <div class="kt-field" style="margin-bottom:0;">
-          <label>タイム（放置時間）</label>
-          <div class="kt-time-picker-wrap">
-            <div class="kt-time-picker-track" id="time-picker-track"></div>
-            <div class="kt-time-picker-indicator"></div>
-          </div>
-          <div class="kt-time-picker-value" id="time-picker-value">スクロールして選択（〜120分）</div>
-          <input type="hidden" id="tf-time">
         </div>
       </div>
 
@@ -2715,13 +2713,25 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
       var slot = document.getElementById('slot-'+kind);
       var img = document.createElement('img');
       img.src = dataUrl;
+      img.onclick = function(e){ e.stopPropagation(); openPhotoViewLightbox(dataUrl); };
       slot.insertBefore(img, slot.firstChild);
       var badge = document.createElement('span');
       badge.className = 'kt-photo-change-btn';
       badge.textContent = '📷 写真を変更';
+      badge.onclick = function(e){
+        e.stopPropagation();
+        var input = document.getElementById('photoFile-'+kind);
+        if(input) input.click();
+      };
       slot.appendChild(badge);
     }
   }
+  window.onPhotoSlotClick = function(kind){
+    var slot = document.getElementById('slot-'+kind);
+    if(slot && slot.querySelector('img')) return; // 写真がある場合は画像/バッジ側のクリックに任せる
+    var input = document.getElementById('photoFile-'+kind);
+    if(input) input.click();
+  };
 
   window.handlePhoto = async function(evt, kind){
     var file = evt.target.files[0];
