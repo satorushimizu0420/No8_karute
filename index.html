@@ -369,7 +369,7 @@
   .kt-history-time{font-size:11px;color:var(--ink-soft);}
   .kt-photos{display:flex;gap:1px;background:var(--line);}
   .kt-photo-box{flex:1;aspect-ratio:1/1;background:#FBEFF6;position:relative;overflow:hidden;}
-  .kt-photo-box img{width:100%;height:100%;object-fit:cover;display:block;}
+  .kt-photo-box img{width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;}
   .kt-photo-box .kt-photo-tag{
     position:absolute;top:6px;left:6px;font-size:9px;letter-spacing:0.08em;
     background:rgba(74,59,70,0.65);color:#fff;padding:2px 7px;border-radius:20px;
@@ -409,6 +409,11 @@
   .kt-photo-slot .kt-plus{font-size:22px;color:var(--ink-soft);}
   .kt-photo-slot .kt-plus-label{font-size:11px;color:var(--ink-soft);}
   .kt-photo-slot input[type=file]{display:none;}
+  .kt-photo-slot .kt-photo-change-btn{
+    position:absolute;bottom:6px;left:0;right:0;text-align:center;
+    font-size:10px;color:#fff;background:rgba(74,51,88,0.72);
+    padding:3px 0;z-index:2;
+  }
 
   .kt-toast{
     position:absolute;left:50%;bottom:24px;transform:translateX(-50%);
@@ -607,6 +612,42 @@
           </div>
           <div class="kt-menu-editor-actions">
             <button class="kt-menu-reset-btn" onclick="resetShampooItems()">初期メニューに戻す</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-menu-head">
+          <div class="kt-card-label" style="margin-bottom:0;">髪＆頭皮の悩み</div>
+          <button class="kt-menu-edit-link" onclick="toggleConcernEditor()" id="concern-edit-link">編集</button>
+        </div>
+        <div class="kt-menu-chips" id="concern-chips"></div>
+        <div class="kt-menu-editor" id="concern-editor" style="display:none;">
+          <div id="concern-editor-rows"></div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-add-btn" onclick="addConcernEditRow()">＋ 項目を追加</button>
+            <button class="kt-menu-save-btn" onclick="saveConcernItems()">保存して閉じる</button>
+          </div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-reset-btn" onclick="resetConcernItems()">初期メニューに戻す</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-menu-head">
+          <div class="kt-card-label" style="margin-bottom:0;">購入商品</div>
+          <button class="kt-menu-edit-link" onclick="toggleProductEditor()" id="product-edit-link">編集</button>
+        </div>
+        <div class="kt-menu-chips" id="product-chips"></div>
+        <div class="kt-menu-editor" id="product-editor" style="display:none;">
+          <div id="product-editor-rows"></div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-add-btn" onclick="addProductEditRow()">＋ 項目を追加</button>
+            <button class="kt-menu-save-btn" onclick="saveProductItems()">保存して閉じる</button>
+          </div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-reset-btn" onclick="resetProductItems()">初期メニューに戻す</button>
           </div>
         </div>
       </div>
@@ -959,6 +1000,12 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     shampooItems: [],         // シャンプーボタン（編集可能・複数選択）
     shampooEditorOpen: false,
     selectedShampoo: [],
+    concernItems: [],         // 髪＆頭皮の悩みボタン（編集可能・複数選択）
+    concernEditorOpen: false,
+    selectedConcern: [],
+    productItems: [],         // 購入商品ボタン（編集可能・複数選択）
+    productEditorOpen: false,
+    selectedProduct: [],
     staffList: [],            // 担当者リスト（編集可能ボタン）
     staffEditorOpen: false,
     selectedStaffForTreatment: null, // この施術記録の担当者（フォーム内選択）
@@ -992,6 +1039,8 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
   var APPLICATION_ITEMS_ADDED_2026_07 = ['ペーパー','ラップ','アルミ'];
   var APPLICATION_ITEMS_ADDED_2026_07_V2 = ['リタッチカラー','全体カラー'];
   var DEFAULT_SHAMPOO_ITEMS = ['強め','普通','弱め','頭皮マッサージ大好き','頭皮マッサージなし','マンツーマンシャンプー','肩マッサージなし'];
+  var DEFAULT_CONCERN_ITEMS = ['クセ毛','ダメージ','ボリューム','匂い','油分'];
+  var DEFAULT_PRODUCT_ITEMS = ['シャンプー','トリートメント','ヘアオイル','スタイリング剤','ワックス'];
 
   var GYOU_LIST = ['あ','か','さ','た','な','は','ま','や','ら','わ'];
   var GYOU_MAP = {
@@ -1116,6 +1165,26 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
   async function saveShampooItemsToStorage(arr){
     try{ await window.storage.set('menu:shampoo-presets', JSON.stringify(arr), false); }
     catch(e){ console.error('save shampoo items failed', e); }
+  }
+  async function loadConcernItems(){
+    try{
+      var r = await window.storage.get('menu:concern-presets', false);
+      return r && r.value ? JSON.parse(r.value) : DEFAULT_CONCERN_ITEMS.slice();
+    }catch(e){ return DEFAULT_CONCERN_ITEMS.slice(); }
+  }
+  async function saveConcernItemsToStorage(arr){
+    try{ await window.storage.set('menu:concern-presets', JSON.stringify(arr), false); }
+    catch(e){ console.error('save concern items failed', e); }
+  }
+  async function loadProductItems(){
+    try{
+      var r = await window.storage.get('menu:product-presets', false);
+      return r && r.value ? JSON.parse(r.value) : DEFAULT_PRODUCT_ITEMS.slice();
+    }catch(e){ return DEFAULT_PRODUCT_ITEMS.slice(); }
+  }
+  async function saveProductItemsToStorage(arr){
+    try{ await window.storage.set('menu:product-presets', JSON.stringify(arr), false); }
+    catch(e){ console.error('save product items failed', e); }
   }
 
   // ---------- utils ----------
@@ -1276,6 +1345,8 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     infoHtml += '<div style="font-size:13px;line-height:1.9;">';
     infoHtml += '電話番号：' + (c.phone ? escapeHtml(c.phone) : '未登録') + '<br>';
     infoHtml += 'シャンプー：' + ((c.shampooPrefs && c.shampooPrefs.length) ? escapeHtml(c.shampooPrefs.join('、')) : '未設定') + '<br>';
+    infoHtml += '髪＆頭皮の悩み：' + ((c.concerns && c.concerns.length) ? escapeHtml(c.concerns.join('、')) : '未設定') + '<br>';
+    infoHtml += '購入商品：' + ((c.purchasedProducts && c.purchasedProducts.length) ? escapeHtml(c.purchasedProducts.join('、')) : 'なし') + '<br>';
     infoHtml += 'メモ：' + (c.memo ? escapeHtml(c.memo).replace(/\n/g,'<br>') : 'なし');
     infoHtml += '</div>';
     document.getElementById('detail-info-card').innerHTML = infoHtml;
@@ -1301,9 +1372,9 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
       html += '<div class="kt-history-item" onclick="openEditTreatment(\''+t.id+'\')">';
       html += '<div class="kt-history-head"><div class="kt-history-date">'+fmtDate(t.date)+(t.staff ? ' <span class="kt-history-staff">／ 担当：'+escapeHtml(t.staff)+'</span>' : '')+'</div><div class="kt-history-time">'+escapeHtml(t.time||'')+'</div></div>';
       html += '<div class="kt-photos">';
-      if(t.stylePhoto) html += '<div class="kt-photo-box"><img src="'+t.stylePhoto+'"><span class="kt-photo-tag kt-photo-tag-style">持参</span></div>';
-      html += '<div class="kt-photo-box">' + (t.beforePhoto ? '<img src="'+t.beforePhoto+'"><span class="kt-photo-tag">BEFORE</span>' : '<div class="kt-photo-empty">写真なし</div>') + '</div>';
-      html += '<div class="kt-photo-box">' + (t.afterPhoto ? '<img src="'+t.afterPhoto+'"><span class="kt-photo-tag">AFTER</span>' : '<div class="kt-photo-empty">写真なし</div>') + '</div>';
+      if(t.stylePhoto) html += '<div class="kt-photo-box"><img src="'+t.stylePhoto+'" onclick="event.stopPropagation();openPhotoViewLightbox(this.src)"><span class="kt-photo-tag kt-photo-tag-style">持参</span></div>';
+      html += '<div class="kt-photo-box">' + (t.beforePhoto ? '<img src="'+t.beforePhoto+'" onclick="event.stopPropagation();openPhotoViewLightbox(this.src)"><span class="kt-photo-tag">BEFORE</span>' : '<div class="kt-photo-empty">写真なし</div>') + '</div>';
+      html += '<div class="kt-photo-box">' + (t.afterPhoto ? '<img src="'+t.afterPhoto+'" onclick="event.stopPropagation();openPhotoViewLightbox(this.src)"><span class="kt-photo-tag">AFTER</span>' : '<div class="kt-photo-empty">写真なし</div>') + '</div>';
       html += '</div>';
       html += '<div class="kt-history-body">';
       if(t.price || t.price === 0) html += '<div class="kt-history-price">お支払い　¥'+Number(t.price).toLocaleString('ja-JP')+'</div>';
@@ -1388,6 +1459,20 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     renderCustomerPhotosCard();
   };
 
+  // 施術履歴（持参・BEFORE・AFTER）の写真を拡大表示する汎用ライトボックス
+  window.openPhotoViewLightbox = function(url){
+    if(!url) return;
+    var bg = document.createElement('div');
+    bg.className = 'kt-cphoto-lightbox-bg';
+    bg.onclick = function(e){ if(e.target === bg) bg.remove(); };
+    bg.innerHTML =
+      '<img src="'+url+'">' +
+      '<div class="kt-cphoto-lightbox-actions">' +
+        '<button type="button" class="kt-cphoto-close-btn" onclick="this.closest(\'.kt-cphoto-lightbox-bg\').remove()">閉じる</button>' +
+      '</div>';
+    document.body.appendChild(bg);
+  };
+
   window.openCustomerPhotoLightbox = function(photoId){
     var p = state.currentCustomerPhotos.find(function(x){ return x.id === photoId; });
     if(!p) return;
@@ -1428,6 +1513,12 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     state.selectedShampoo = [];
     closeShampooEditor();
     renderShampooChips();
+    state.selectedConcern = [];
+    closeConcernEditor();
+    renderConcernChips();
+    state.selectedProduct = [];
+    closeProductEditor();
+    renderProductChips();
     showScreen('screen-customer-form');
   };
 
@@ -1445,6 +1536,12 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     state.selectedShampoo = (c.shampooPrefs || []).slice();
     closeShampooEditor();
     renderShampooChips();
+    state.selectedConcern = (c.concerns || []).slice();
+    closeConcernEditor();
+    renderConcernChips();
+    state.selectedProduct = (c.purchasedProducts || []).slice();
+    closeProductEditor();
+    renderProductChips();
     showScreen('screen-customer-form');
   };
 
@@ -1460,10 +1557,12 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     var phone = document.getElementById('cf-phone').value.trim();
     var memo = document.getElementById('cf-memo').value.trim();
     var shampooPrefs = state.selectedShampoo.slice();
+    var concerns = state.selectedConcern.slice();
+    var purchasedProducts = state.selectedProduct.slice();
 
     if(state.editingCustomerId){
       var c = state.customers.find(function(x){ return x.id === state.editingCustomerId; });
-      c.name = name; c.kana = kana; c.phone = phone; c.memo = memo; c.shampooPrefs = shampooPrefs;
+      c.name = name; c.kana = kana; c.phone = phone; c.memo = memo; c.shampooPrefs = shampooPrefs; c.concerns = concerns; c.purchasedProducts = purchasedProducts;
       await saveIndex(state.customers);
       toast('顧客情報を更新しました');
       await openCustomer(c.id);
@@ -1472,7 +1571,7 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
       var newC = {
         id: 'c_' + Date.now() + '_' + Math.floor(Math.random()*1000),
         no: meta.next,
-        name: name, kana: kana, phone: phone, memo: memo, shampooPrefs: shampooPrefs,
+        name: name, kana: kana, phone: phone, memo: memo, shampooPrefs: shampooPrefs, concerns: concerns, purchasedProducts: purchasedProducts,
         lastVisit: null,
         createdAt: Date.now()
       };
@@ -2256,6 +2355,138 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     toast('初期メニューに戻しました');
   };
 
+  // ---------- 髪＆頭皮の悩みボタン（編集可能・複数選択） ----------
+  function renderConcernChips(){
+    var el = document.getElementById('concern-chips');
+    if(state.concernItems.length === 0){
+      el.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);">項目が登録されていません。「編集」から追加できます。</div>';
+      return;
+    }
+    var html = '';
+    state.concernItems.forEach(function(item, i){
+      var active = (state.selectedConcern.indexOf(item) !== -1) ? ' active' : '';
+      html += '<button type="button" class="kt-menu-chip'+active+'" onclick="toggleConcernSelect('+i+')">'+escapeHtml(item)+'</button>';
+    });
+    el.innerHTML = html;
+  }
+  window.toggleConcernSelect = function(index){
+    var item = state.concernItems[index];
+    if(!item) return;
+    var idx = state.selectedConcern.indexOf(item);
+    if(idx !== -1){ state.selectedConcern.splice(idx, 1); }
+    else { state.selectedConcern.push(item); }
+    renderConcernChips();
+  };
+  window.toggleConcernEditor = function(){
+    state.concernEditorOpen = !state.concernEditorOpen;
+    var panel = document.getElementById('concern-editor');
+    var link = document.getElementById('concern-edit-link');
+    if(state.concernEditorOpen){ panel.style.display = 'block'; link.textContent = '閉じる'; renderConcernEditorRows(); }
+    else { panel.style.display = 'none'; link.textContent = '編集'; }
+  };
+  function closeConcernEditor(){
+    state.concernEditorOpen = false;
+    var panel = document.getElementById('concern-editor');
+    var link = document.getElementById('concern-edit-link');
+    if(panel) panel.style.display = 'none';
+    if(link) link.textContent = '編集';
+  }
+  function renderConcernEditorRows(){
+    var wrap = document.getElementById('concern-editor-rows');
+    var html = '';
+    state.concernItems.forEach(function(item, i){
+      html += '<div class="kt-menu-edit-row">' +
+        '<input type="text" value="'+escapeHtml(item)+'" onchange="updateConcernEditRow('+i+', this.value)">' +
+        '<button type="button" onclick="removeConcernEditRow('+i+')" title="削除">✕</button>' +
+      '</div>';
+    });
+    wrap.innerHTML = html;
+  }
+  window.updateConcernEditRow = function(index, value){ state.concernItems[index] = value; };
+  window.removeConcernEditRow = function(index){ state.concernItems.splice(index, 1); renderConcernEditorRows(); };
+  window.addConcernEditRow = function(){ state.concernItems.push('新しい項目'); renderConcernEditorRows(); };
+  window.saveConcernItems = async function(){
+    state.concernItems = state.concernItems.map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+    await saveConcernItemsToStorage(state.concernItems);
+    closeConcernEditor();
+    renderConcernChips();
+    toast('悩みメニューを保存しました');
+  };
+  window.resetConcernItems = async function(){
+    if(!confirm('悩みボタンを初期の項目に戻します。よろしいですか？')) return;
+    state.concernItems = DEFAULT_CONCERN_ITEMS.slice();
+    await saveConcernItemsToStorage(state.concernItems);
+    renderConcernEditorRows();
+    renderConcernChips();
+    toast('初期メニューに戻しました');
+  };
+
+  // ---------- 購入商品ボタン（編集可能・複数選択） ----------
+  function renderProductChips(){
+    var el = document.getElementById('product-chips');
+    if(state.productItems.length === 0){
+      el.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);">項目が登録されていません。「編集」から追加できます。</div>';
+      return;
+    }
+    var html = '';
+    state.productItems.forEach(function(item, i){
+      var active = (state.selectedProduct.indexOf(item) !== -1) ? ' active' : '';
+      html += '<button type="button" class="kt-menu-chip'+active+'" onclick="toggleProductSelect('+i+')">'+escapeHtml(item)+'</button>';
+    });
+    el.innerHTML = html;
+  }
+  window.toggleProductSelect = function(index){
+    var item = state.productItems[index];
+    if(!item) return;
+    var idx = state.selectedProduct.indexOf(item);
+    if(idx !== -1){ state.selectedProduct.splice(idx, 1); }
+    else { state.selectedProduct.push(item); }
+    renderProductChips();
+  };
+  window.toggleProductEditor = function(){
+    state.productEditorOpen = !state.productEditorOpen;
+    var panel = document.getElementById('product-editor');
+    var link = document.getElementById('product-edit-link');
+    if(state.productEditorOpen){ panel.style.display = 'block'; link.textContent = '閉じる'; renderProductEditorRows(); }
+    else { panel.style.display = 'none'; link.textContent = '編集'; }
+  };
+  function closeProductEditor(){
+    state.productEditorOpen = false;
+    var panel = document.getElementById('product-editor');
+    var link = document.getElementById('product-edit-link');
+    if(panel) panel.style.display = 'none';
+    if(link) link.textContent = '編集';
+  }
+  function renderProductEditorRows(){
+    var wrap = document.getElementById('product-editor-rows');
+    var html = '';
+    state.productItems.forEach(function(item, i){
+      html += '<div class="kt-menu-edit-row">' +
+        '<input type="text" value="'+escapeHtml(item)+'" onchange="updateProductEditRow('+i+', this.value)">' +
+        '<button type="button" onclick="removeProductEditRow('+i+')" title="削除">✕</button>' +
+      '</div>';
+    });
+    wrap.innerHTML = html;
+  }
+  window.updateProductEditRow = function(index, value){ state.productItems[index] = value; };
+  window.removeProductEditRow = function(index){ state.productItems.splice(index, 1); renderProductEditorRows(); };
+  window.addProductEditRow = function(){ state.productItems.push('新しい項目'); renderProductEditorRows(); };
+  window.saveProductItems = async function(){
+    state.productItems = state.productItems.map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+    await saveProductItemsToStorage(state.productItems);
+    closeProductEditor();
+    renderProductChips();
+    toast('購入商品メニューを保存しました');
+  };
+  window.resetProductItems = async function(){
+    if(!confirm('購入商品ボタンを初期の項目に戻します。よろしいですか？')) return;
+    state.productItems = DEFAULT_PRODUCT_ITEMS.slice();
+    await saveProductItemsToStorage(state.productItems);
+    renderProductEditorRows();
+    renderProductChips();
+    toast('初期メニューに戻しました');
+  };
+
   window.toggleMenuEditorA = function(){
     state.menuEditorAOpen = !state.menuEditorAOpen;
     var panel = document.getElementById('menu-a-editor');
@@ -2476,7 +2707,7 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
 
   function resetPhotoSlot(kind){
     var slot = document.getElementById('slot-'+kind);
-    slot.querySelectorAll('img').forEach(function(i){ i.remove(); });
+    slot.querySelectorAll('img, .kt-photo-change-btn').forEach(function(i){ i.remove(); });
   }
   function setPhotoSlot(kind, dataUrl){
     resetPhotoSlot(kind);
@@ -2485,6 +2716,10 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
       var img = document.createElement('img');
       img.src = dataUrl;
       slot.insertBefore(img, slot.firstChild);
+      var badge = document.createElement('span');
+      badge.className = 'kt-photo-change-btn';
+      badge.textContent = '📷 写真を変更';
+      slot.appendChild(badge);
     }
   }
 
@@ -2645,6 +2880,8 @@ var KARTE_GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
     });
     if(applicationV3Changed){ await saveApplicationItemsToStorage(state.applicationItems); }
     state.shampooItems = await loadShampooItems();
+    state.concernItems = await loadConcernItems();
+    state.productItems = await loadProductItems();
     renderList();
   }
   init();
