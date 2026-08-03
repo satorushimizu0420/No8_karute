@@ -743,34 +743,130 @@
 
       <div class="kt-card">
         <div class="kt-menu-head">
-          <div class="kt-card-label" style="margin-bottom:0;">① カット・スパ・アレンジ</div>
-          <button class="kt-menu-edit-link" onclick="toggleMenuEditorA()" id="menu-a-edit-link">編集</button>
+          <div class="kt-card-label" style="margin-bottom:0;">① カット</div>
+          <button class="kt-menu-edit-link" onclick="toggleMenuCatEditor('cut')" id="menu-cut-edit-link">編集</button>
         </div>
-        <div class="kt-menu-chips" id="menu-a-chips"></div>
-        <div class="kt-menu-editor" id="menu-a-editor" style="display:none;">
-          <div id="menu-a-editor-rows"></div>
+        <div class="kt-menu-chips" id="menu-cut-chips"></div>
+        <div class="kt-menu-editor" id="menu-cut-editor" style="display:none;">
+          <div id="menu-cut-editor-rows"></div>
           <div class="kt-menu-editor-actions">
-            <button class="kt-menu-add-btn" onclick="addMenuEditRowA()">＋ 項目を追加</button>
-            <button class="kt-menu-save-btn" onclick="saveMenuItemsA()">保存して閉じる</button>
+            <button class="kt-menu-add-btn" onclick="addMenuCatEditRow('cut')">＋ 項目を追加</button>
+            <button class="kt-menu-save-btn" onclick="saveMenuCatItems('cut')">保存して閉じる</button>
           </div>
           <div class="kt-menu-editor-actions">
-            <button class="kt-menu-reset-btn" onclick="resetMenuItemsA()">初期メニューに戻す</button>
+            <button class="kt-menu-reset-btn" onclick="resetMenuCatItems('cut')">初期メニューに戻す</button>
           </div>
         </div>
 
         <div class="kt-menu-head" style="margin-top:16px;">
-          <div class="kt-card-label" style="margin-bottom:0;">② カラー・パーマ・ストレート・トリートメント</div>
-          <button class="kt-menu-edit-link" onclick="toggleMenuEditorB()" id="menu-b-edit-link">編集</button>
+          <div class="kt-card-label" style="margin-bottom:0;">② カラー</div>
+          <button class="kt-menu-edit-link" onclick="toggleMenuCatEditor('color')" id="menu-color-edit-link">編集</button>
         </div>
-        <div class="kt-menu-chips" id="menu-b-chips"></div>
-        <div class="kt-menu-editor" id="menu-b-editor" style="display:none;">
-          <div id="menu-b-editor-rows"></div>
+        <div class="kt-menu-chips" id="menu-color-chips"></div>
+        <div class="kt-menu-editor" id="menu-color-editor" style="display:none;">
+          <div id="menu-color-editor-rows"></div>
           <div class="kt-menu-editor-actions">
-            <button class="kt-menu-add-btn" onclick="addMenuEditRowB()">＋ 項目を追加</button>
-            <button class="kt-menu-save-btn" onclick="saveMenuItemsB()">保存して閉じる</button>
+            <button class="kt-menu-add-btn" onclick="addMenuCatEditRow('color')">＋ 項目を追加</button>
+            <button class="kt-menu-save-btn" onclick="saveMenuCatItems('color')">保存して閉じる</button>
           </div>
           <div class="kt-menu-editor-actions">
-            <button class="kt-menu-reset-btn" onclick="resetMenuItemsB()">初期メニューに戻す</button>
+            <button class="kt-menu-reset-btn" onclick="resetMenuCatItems('color')">初期メニューに戻す</button>
+          </div>
+        </div>
+
+        <div class="kt-menu-head" style="margin-top:16px;">
+          <div class="kt-card-label" style="margin-bottom:0;">③ パーマ＆ストレート</div>
+          <button class="kt-menu-edit-link" onclick="toggleMenuCatEditor('perm')" id="menu-perm-edit-link">編集</button>
+        </div>
+        <div class="kt-menu-chips" id="menu-perm-chips"></div>
+        <div class="kt-menu-editor" id="menu-perm-editor" style="display:none;">
+          <div id="menu-perm-editor-rows"></div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-add-btn" onclick="addMenuCatEditRow('perm')">＋ 項目を追加</button>
+            <button class="kt-menu-save-btn" onclick="saveMenuCatItems('perm')">保存して閉じる</button>
+          </div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-reset-btn" onclick="resetMenuCatItems('perm')">初期メニューに戻す</button>
+          </div>
+        </div>
+
+        <div class="kt-menu-head" style="margin-top:16px;">
+          <div class="kt-card-label" style="margin-bottom:0;">④ トリートメント＆スパ</div>
+          <button class="kt-menu-edit-link" onclick="toggleMenuCatEditor('treatment')" id="menu-treatment-edit-link">編集</button>
+        </div>
+        <div class="kt-menu-chips" id="menu-treatment-chips"></div>
+        <div class="kt-menu-editor" id="menu-treatment-editor" style="display:none;">
+          <div id="menu-treatment-editor-rows"></div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-add-btn" onclick="addMenuCatEditRow('treatment')">＋ 項目を追加</button>
+            <button class="kt-menu-save-btn" onclick="saveMenuCatItems('treatment')">保存して閉じる</button>
+          </div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-reset-btn" onclick="resetMenuCatItems('treatment')">初期メニューに戻す</button>
+          </div>
+        </div>
+
+        <div class="kt-menu-head" style="margin-top:16px;">
+          <div class="kt-card-label" style="margin-bottom:0;">⑤ アレンジ＆メイク</div>
+          <button class="kt-menu-edit-link" onclick="toggleMenuCatEditor('arrange')" id="menu-arrange-edit-link">編集</button>
+        </div>
+        <div class="kt-menu-chips" id="menu-arrange-chips"></div>
+        <div class="kt-menu-editor" id="menu-arrange-editor" style="display:none;">
+          <div id="menu-arrange-editor-rows"></div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-add-btn" onclick="addMenuCatEditRow('arrange')">＋ 項目を追加</button>
+            <button class="kt-menu-save-btn" onclick="saveMenuCatItems('arrange')">保存して閉じる</button>
+          </div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-reset-btn" onclick="resetMenuCatItems('arrange')">初期メニューに戻す</button>
+          </div>
+        </div>
+
+        <div class="kt-menu-head" style="margin-top:16px;">
+          <div class="kt-card-label" style="margin-bottom:0;">⑥ オキシ</div>
+          <button class="kt-menu-edit-link" onclick="toggleOxidantEditor()" id="oxidant-edit-link">編集</button>
+        </div>
+        <div class="kt-menu-chips" id="oxidant-chips"></div>
+        <div class="kt-menu-editor" id="oxidant-editor" style="display:none;">
+          <div id="oxidant-editor-rows"></div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-add-btn" onclick="addOxidantEditRow()">＋ 項目を追加</button>
+            <button class="kt-menu-save-btn" onclick="saveOxidantItems()">保存して閉じる</button>
+          </div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-reset-btn" onclick="resetOxidantItems()">初期メニューに戻す</button>
+          </div>
+        </div>
+
+        <div class="kt-menu-head" style="margin-top:16px;">
+          <div class="kt-card-label" style="margin-bottom:0;">⑦ 塗布方法</div>
+          <button class="kt-menu-edit-link" onclick="toggleApplicationEditor()" id="application-edit-link">編集</button>
+        </div>
+        <div class="kt-menu-chips" id="application-chips"></div>
+        <div class="kt-menu-editor" id="application-editor" style="display:none;">
+          <div id="application-editor-rows"></div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-add-btn" onclick="addApplicationEditRow()">＋ 項目を追加</button>
+            <button class="kt-menu-save-btn" onclick="saveApplicationItems()">保存して閉じる</button>
+          </div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-reset-btn" onclick="resetApplicationItems()">初期メニューに戻す</button>
+          </div>
+        </div>
+
+        <div class="kt-menu-head" style="margin-top:16px;">
+          <div class="kt-card-label" style="margin-bottom:0;">⑧ ケア</div>
+          <button class="kt-menu-edit-link" onclick="toggleMenuCatEditor('care')" id="menu-care-edit-link">編集</button>
+        </div>
+        <div class="kt-menu-chips" id="menu-care-chips"></div>
+        <div class="kt-menu-editor" id="menu-care-editor" style="display:none;">
+          <div id="menu-care-editor-rows"></div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-add-btn" onclick="addMenuCatEditRow('care')">＋ 項目を追加</button>
+            <button class="kt-menu-save-btn" onclick="saveMenuCatItems('care')">保存して閉じる</button>
+          </div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-reset-btn" onclick="resetMenuCatItems('care')">初期メニューに戻す</button>
           </div>
         </div>
 
@@ -787,38 +883,6 @@
           <div id="gram-split-result" style="margin-top:8px;font-size:12.5px;color:var(--ink-soft);line-height:1.8;"></div>
         </div>
 
-        <div class="kt-menu-head" style="margin-top:16px;">
-          <div class="kt-card-label" style="margin-bottom:0;">オキシ</div>
-          <button class="kt-menu-edit-link" onclick="toggleOxidantEditor()" id="oxidant-edit-link">編集</button>
-        </div>
-        <div class="kt-menu-chips" id="oxidant-chips"></div>
-        <div class="kt-menu-editor" id="oxidant-editor" style="display:none;">
-          <div id="oxidant-editor-rows"></div>
-          <div class="kt-menu-editor-actions">
-            <button class="kt-menu-add-btn" onclick="addOxidantEditRow()">＋ 項目を追加</button>
-            <button class="kt-menu-save-btn" onclick="saveOxidantItems()">保存して閉じる</button>
-          </div>
-          <div class="kt-menu-editor-actions">
-            <button class="kt-menu-reset-btn" onclick="resetOxidantItems()">初期メニューに戻す</button>
-          </div>
-        </div>
-
-        <div class="kt-menu-head" style="margin-top:16px;">
-          <div class="kt-card-label" style="margin-bottom:0;">塗布</div>
-          <button class="kt-menu-edit-link" onclick="toggleApplicationEditor()" id="application-edit-link">編集</button>
-        </div>
-        <div class="kt-menu-chips" id="application-chips"></div>
-        <div class="kt-menu-editor" id="application-editor" style="display:none;">
-          <div id="application-editor-rows"></div>
-          <div class="kt-menu-editor-actions">
-            <button class="kt-menu-add-btn" onclick="addApplicationEditRow()">＋ 項目を追加</button>
-            <button class="kt-menu-save-btn" onclick="saveApplicationItems()">保存して閉じる</button>
-          </div>
-          <div class="kt-menu-editor-actions">
-            <button class="kt-menu-reset-btn" onclick="resetApplicationItems()">初期メニューに戻す</button>
-          </div>
-        </div>
-
         <div class="kt-field" style="margin-top:16px;margin-bottom:0;">
           <label>タイム（放置時間）</label>
           <div class="kt-time-picker-wrap">
@@ -829,10 +893,10 @@
           <input type="hidden" id="tf-time">
         </div>
 
-        <button type="button" class="kt-menu-add-btn" style="width:100%;margin-top:16px;" onclick="togglePage2()" id="page2-toggle-btn">＋ 2回目のカラーを追加</button>
+        <button type="button" class="kt-menu-add-btn" style="width:100%;margin-top:16px;" onclick="togglePage2()" id="page2-toggle-btn">＋ 2回目の薬剤を追加</button>
 
         <div id="page2-section" style="display:none;">
-          <div class="kt-card-label" style="margin-top:16px;">2回目のカラー</div>
+          <div class="kt-card-label" style="margin-top:16px;">2回目の薬剤</div>
           <div class="kt-recipe-pill-wrap" id="recipe-rows-2"></div>
           <button type="button" class="kt-menu-add-btn" style="width:100%;margin-top:8px;" onclick="addRecipeRow2()">＋ 枠を追加</button>
 
@@ -850,6 +914,9 @@
 
           <div class="kt-card-label" style="margin-top:16px;margin-bottom:0;">塗布（2回目）</div>
           <div class="kt-menu-chips" id="application-chips-2"></div>
+
+          <div class="kt-card-label" style="margin-top:16px;margin-bottom:0;">ケア（2回目）</div>
+          <div class="kt-menu-chips" id="care-chips-2"></div>
 
           <div class="kt-card-label" style="margin-top:16px;">タイム（放置時間・2回目）</div>
           <div class="kt-time-picker-wrap" style="height:110px;">
@@ -1024,16 +1091,15 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     editingTreatmentId: null, // null = new
     selectedGyou: null,       // 'あ' | 'か' | ... | null(すべて)
     sortMode: 'no',           // 'no' | 'kana'
-    menuItemsA: [],           // ①カット・スパ・アレンジ
-    menuEditorAOpen: false,
-    menuItemsB: [],           // ②カラー・パーマ・ストレート・トリートメント
-    menuEditorBOpen: false,
+    menuCat: { cut:[], color:[], perm:[], treatment:[], arrange:[] }, // 5カテゴリのメニューボタン
+    menuCatEditorOpen: { cut:false, color:false, perm:false, treatment:false, arrange:false },
     selectedMenu: [],         // 施術メニュー選択（薬剤名欄とは独立）
     recipeRows: [],           // 薬剤名・比率の記入枠（追加編集可能）
     page2Enabled: false,      // 2回カラーする人用：2ページ目（薬剤名・オキシ・塗布）
     recipeRows2: [],
     selectedOxidant2: [],
     selectedApplication2: [],
+    selectedCare2: [],
     oxidantItems: [],         // オキシ選択ボタン（編集可能・複数選択）
     oxidantEditorOpen: false,
     selectedOxidant: [],
@@ -1055,26 +1121,34 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     selectedStaffFilter: null // 一覧画面での担当者絞り込み
   };
 
-  var DEFAULT_MENU_ITEMS_A = [
+  var MENU_CAT_KEYS = ['cut','color','perm','treatment','arrange','care'];
+  var MENU_CAT_LABELS = { cut:'① カット', color:'② カラー', perm:'③ パーマ＆ストレート', treatment:'④ トリートメント＆スパ', arrange:'⑤ アレンジ＆メイク', care:'⑧ ケア' };
+  var DEFAULT_MENU_CAT = {
+    cut: ['カット','前髪','顔まわり','ショート','ボブ','ロブ','ミディアム','ロング','全体レイヤー','顔まわりレイヤー','切りっぱなし','そろえる位','量感','トップボリュームUP!'],
+    color: ['全体カラー','リタッチカラー','白髪染め','ブリーチ','ハイライト','Wカラー','マニキュア','フレーミング','イヤリング','インナー','アンブレラ','細目ハイライト','太めハイライト','ナチュラルハイライト','リタッチブリーチ','全体ブリーチ'],
+    perm: ['クリームパーマ','リキッドパーマ','デジタルパーマ','全体ストレートパーマ','リタッチストレートパーマ','ストカール'],
+    treatment: ['トリートメント','ヘッドスパ'],
+    arrange: ['アレンジ','メイク','ヘアセット'],
+    care: ['アミノ酸ケア','頭皮クレンジング','毛先集中ケア','UVケア','ホームケア提案']
+  };
+  // 旧バージョン（①カット・スパ・アレンジ／②カラー・パーマ・ストレート・トリートメント の2分類）からの移行用マッピング
+  var LEGACY_MENU_ITEMS_A = [
     'カット','ヘッドスパ','ヘアセット','メイク',
     '前髪','顔まわり','ショート','ボブ','ロブ','ミディアム','ロング',
     '全体レイヤー','顔まわりレイヤー','切りっぱなし','そろえる位','量感','トップボリュームUP!','アレンジ'
   ];
-  var MENU_ITEMS_A_ADDED_2026_07_V2 = ['アレンジ'];
-  var MENU_ITEMS_A_ADDED_2026_07 = [
-    '前髪','顔まわり','ショート','ボブ','ロブ','ミディアム','ロング',
-    '全体レイヤー','顔まわりレイヤー','切りっぱなし','そろえる位','量感','トップボリュームUP!'
-  ];
-  var DEFAULT_MENU_ITEMS_B = [
+  var LEGACY_MENU_ITEMS_B = [
     '全体カラー','リタッチカラー','白髪染め','ブリーチ','ハイライト','Wカラー','マニキュア',
     'クリームパーマ','リキッドパーマ','デジタルパーマ','全体ストレートパーマ','リタッチストレートパーマ','ストカール','トリートメント',
     'フレーミング','イヤリング','インナー','アンブレラ','細目ハイライト','太めハイライト','ナチュラルハイライト','リタッチブリーチ','全体ブリーチ'
   ];
-  var MENU_ITEMS_B_ADDED_2026_07 = [
-    'フレーミング','イヤリング','インナー','アンブレラ','細目ハイライト','太めハイライト','ナチュラルハイライト','リタッチブリーチ','全体ブリーチ'
-  ];
-  // 旧バージョン（①②分割前）のメニュー一覧からの移行用：各項目がどちらの部に属するか
-  var LEGACY_MENU_CATEGORY_A = ['カット','ヘッドスパ','ヘアセット','メイク'];
+  function legacyItemToCat(item){
+    for(var i=0;i<MENU_CAT_KEYS.length;i++){
+      var key = MENU_CAT_KEYS[i];
+      if(DEFAULT_MENU_CAT[key].indexOf(item) !== -1) return key;
+    }
+    return null; // 不明な項目（利用者が追加したカスタム項目など）
+  }
   var DEFAULT_STAFF_LIST = ['店主'];
   var DEFAULT_OXIDANT_ITEMS = ['6％','4.5％','3％','2.8％','ジェル2％','AC6％','AC3％','オリジナルOX','OX２倍','OX３倍'];
   var DEFAULT_APPLICATION_ITEMS = ['リタッチカラー','全体カラー','グレイタッチ','ゼロタッチ','１ｃｍ空けてタッチ','頭皮スプレー','顔まわりクリーム','ペーパー','ラップ','アルミ','リタッチストレート','全体ストレート'];
@@ -1155,19 +1229,21 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
       return r && r.value ? JSON.parse(r.value) : null;
     }catch(e){ return null; }
   }
-  async function saveMenuItemsAToStorage(arr){
-    try{ await window.storage.set('menu:recipe-presets-a', JSON.stringify(arr), false); }
-    catch(e){ console.error('save menu items A failed', e); }
-  }
   async function loadMenuItemsB(){
     try{
       var r = await window.storage.get('menu:recipe-presets-b', false);
       return r && r.value ? JSON.parse(r.value) : null;
     }catch(e){ return null; }
   }
-  async function saveMenuItemsBToStorage(arr){
-    try{ await window.storage.set('menu:recipe-presets-b', JSON.stringify(arr), false); }
-    catch(e){ console.error('save menu items B failed', e); }
+  async function loadMenuCatRaw(catKey){
+    try{
+      var r = await window.storage.get('menu:cat-'+catKey, false);
+      return r && r.value ? JSON.parse(r.value) : null;
+    }catch(e){ return null; }
+  }
+  async function saveMenuCatToStorage(catKey, arr){
+    try{ await window.storage.set('menu:cat-'+catKey, JSON.stringify(arr), false); }
+    catch(e){ console.error('save menu cat failed', catKey, e); }
   }
   async function loadStaffList(){
     try{
@@ -1425,12 +1501,13 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
       if(t.menuChoices && t.menuChoices.length) html += '<div class="kt-history-tagline">メニュー：'+escapeHtml(t.menuChoices.join('、'))+'</div>';
       if(t.oxidantChoices && t.oxidantChoices.length) html += '<div class="kt-history-tagline">オキシ：'+escapeHtml(t.oxidantChoices.join('、'))+'</div>';
       if(t.applicationMethods && t.applicationMethods.length) html += '<div class="kt-history-tagline">塗布：'+escapeHtml(t.applicationMethods.join('、'))+'</div>';
-      if(t.page2Enabled && (t.recipe2 || (t.oxidantChoices2&&t.oxidantChoices2.length) || (t.applicationMethods2&&t.applicationMethods2.length) || t.time2)){
+      if(t.page2Enabled && (t.recipe2 || (t.oxidantChoices2&&t.oxidantChoices2.length) || (t.applicationMethods2&&t.applicationMethods2.length) || (t.careChoices2&&t.careChoices2.length) || t.time2)){
         html += '<div class="kt-history-page2">';
-        html += '<div class="kt-history-page2-label">2回目のカラー</div>';
+        html += '<div class="kt-history-page2-label">2回目の薬剤</div>';
         if(t.recipe2) html += '<div class="kt-history-recipe">'+escapeHtml(t.recipe2).replace(/\n/g,'<br>')+'</div>';
         if(t.oxidantChoices2 && t.oxidantChoices2.length) html += '<div class="kt-history-tagline">オキシ：'+escapeHtml(t.oxidantChoices2.join('、'))+'</div>';
         if(t.applicationMethods2 && t.applicationMethods2.length) html += '<div class="kt-history-tagline">塗布：'+escapeHtml(t.applicationMethods2.join('、'))+'</div>';
+        if(t.careChoices2 && t.careChoices2.length) html += '<div class="kt-history-tagline">ケア：'+escapeHtml(t.careChoices2.join('、'))+'</div>';
         if(t.time2) html += '<div class="kt-history-tagline">タイム：'+escapeHtml(t.time2)+'</div>';
         html += '</div>';
       }
@@ -1666,11 +1743,9 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     document.getElementById('tf-memo').value = '';
     document.getElementById('tf-delete-row').style.display = 'none';
     resetPhotoSlot('style'); resetPhotoSlot('before'); resetPhotoSlot('after');
-    closeMenuEditorA();
-    closeMenuEditorB();
+    closeAllMenuCatEditors();
     state.selectedMenu = [];
-    renderMenuChipsA();
-    renderMenuChipsB();
+    renderAllMenuCatChips();
     state.selectedStaffForTreatment = null;
     document.getElementById('tf-staff').value = '';
     closeStaffEditor();
@@ -1685,12 +1760,13 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     state.recipeRows2 = [];
     state.selectedOxidant2 = [];
     state.selectedApplication2 = [];
+    state.selectedCare2 = [];
     document.getElementById('tf-time-2').value = '';
     document.getElementById('tf-total-gram-2').value = '';
     document.getElementById('gram-split-result-2').innerHTML = '';
     document.getElementById('time-picker-value-2').textContent = 'スクロールして選択（〜120分）';
     document.getElementById('page2-section').style.display = 'none';
-    document.getElementById('page2-toggle-btn').textContent = '＋ 2回目のカラーを追加';
+    document.getElementById('page2-toggle-btn').textContent = '＋ 2回目の薬剤を追加';
     updateIntervalNote();
     setTreatmentFormLock(false);
     showScreen('screen-treatment-form');
@@ -1714,11 +1790,9 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     setPhotoSlot('style', t.stylePhoto);
     setPhotoSlot('before', t.beforePhoto);
     setPhotoSlot('after', t.afterPhoto);
-    closeMenuEditorA();
-    closeMenuEditorB();
+    closeAllMenuCatEditors();
     state.selectedMenu = (t.menuChoices || []).slice();
-    renderMenuChipsA();
-    renderMenuChipsB();
+    renderAllMenuCatChips();
     state.selectedStaffForTreatment = t.staff || null;
     document.getElementById('tf-staff').value = t.staff || '';
     closeStaffEditor();
@@ -1729,11 +1803,12 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     state.selectedApplication = (t.applicationMethods || []).slice();
     closeApplicationEditor();
     renderApplicationChips();
-    var hasPage2 = !!(t.page2Enabled || (t.recipeItems2 && t.recipeItems2.length) || (t.oxidantChoices2 && t.oxidantChoices2.length) || (t.applicationMethods2 && t.applicationMethods2.length) || t.time2);
+    var hasPage2 = !!(t.page2Enabled || (t.recipeItems2 && t.recipeItems2.length) || (t.oxidantChoices2 && t.oxidantChoices2.length) || (t.applicationMethods2 && t.applicationMethods2.length) || (t.careChoices2 && t.careChoices2.length) || t.time2);
     state.page2Enabled = hasPage2;
     state.recipeRows2 = hasPage2 ? buildRecipeRowsFromTreatment({ recipeItems: t.recipeItems2, recipe: t.recipe2 }) : [];
     state.selectedOxidant2 = (t.oxidantChoices2 || []).slice();
     state.selectedApplication2 = (t.applicationMethods2 || []).slice();
+    state.selectedCare2 = (t.careChoices2 || []).slice();
     document.getElementById('tf-time-2').value = t.time2 || '';
     document.getElementById('tf-total-gram-2').value = (t.totalGram2 || t.totalGram2 === 0) ? t.totalGram2 : '';
     var page2Section = document.getElementById('page2-section');
@@ -1744,12 +1819,13 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
       renderRecipeRows2();
       renderOxidantChips2();
       renderApplicationChips2();
+      renderCareChips2();
       renderGramSplit2();
       var initMinutes2 = parseMinutesFromTimeText(t.time2);
       setTimeout(function(){ setTimePickerValue2(initMinutes2); }, 0);
     } else {
       page2Section.style.display = 'none';
-      page2Btn.textContent = '＋ 2回目のカラーを追加';
+      page2Btn.textContent = '＋ 2回目の薬剤を追加';
     }
     updateIntervalNote();
     setTreatmentFormLock(true);
@@ -1914,47 +1990,31 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
   }
 
   // ---------- 施術メニュー：①カット・スパ・アレンジ / ②カラー・パーマ・ストレート・トリートメント ----------
-  function renderMenuChipsA(){
-    var el = document.getElementById('menu-a-chips');
-    if(state.menuItemsA.length === 0){
+  function renderMenuCatChips(catKey){
+    var el = document.getElementById('menu-'+catKey+'-chips');
+    if(!el) return;
+    var items = state.menuCat[catKey] || [];
+    if(items.length === 0){
       el.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);">メニューが登録されていません。「編集」から追加できます。</div>';
       return;
     }
     var html = '';
-    state.menuItemsA.forEach(function(item, i){
+    items.forEach(function(item, i){
       var active = (state.selectedMenu.indexOf(item) !== -1) ? ' active' : '';
-      html += '<button type="button" class="kt-menu-chip'+active+'" onclick="toggleMenuSelectA('+i+')">'+escapeHtml(item)+'</button>';
+      html += '<button type="button" class="kt-menu-chip'+active+'" onclick="toggleMenuCatSelect(\''+catKey+'\','+i+')">'+escapeHtml(item)+'</button>';
     });
     el.innerHTML = html;
   }
-  window.toggleMenuSelectA = function(index){
-    var item = state.menuItemsA[index];
+  function renderAllMenuCatChips(){
+    MENU_CAT_KEYS.forEach(function(k){ renderMenuCatChips(k); });
+  }
+  window.toggleMenuCatSelect = function(catKey, index){
+    var item = (state.menuCat[catKey] || [])[index];
     if(!item) return;
     var idx = state.selectedMenu.indexOf(item);
     if(idx !== -1){ state.selectedMenu.splice(idx, 1); }
     else { state.selectedMenu.push(item); }
-    renderMenuChipsA();
-  };
-  function renderMenuChipsB(){
-    var el = document.getElementById('menu-b-chips');
-    if(state.menuItemsB.length === 0){
-      el.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);">メニューが登録されていません。「編集」から追加できます。</div>';
-      return;
-    }
-    var html = '';
-    state.menuItemsB.forEach(function(item, i){
-      var active = (state.selectedMenu.indexOf(item) !== -1) ? ' active' : '';
-      html += '<button type="button" class="kt-menu-chip'+active+'" onclick="toggleMenuSelectB('+i+')">'+escapeHtml(item)+'</button>';
-    });
-    el.innerHTML = html;
-  }
-  window.toggleMenuSelectB = function(index){
-    var item = state.menuItemsB[index];
-    if(!item) return;
-    var idx = state.selectedMenu.indexOf(item);
-    if(idx !== -1){ state.selectedMenu.splice(idx, 1); }
-    else { state.selectedMenu.push(item); }
-    renderMenuChipsB();
+    renderMenuCatChips(catKey);
   };
 
   // ---------- 薬剤名・比率：追加編集可能な記入枠 ----------
@@ -2099,7 +2159,7 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     return rows;
   }
 
-  // ---------- 2回目のカラー：薬剤名・比率（page2） ----------
+  // ---------- 2回目の薬剤：薬剤名・比率（page2） ----------
   function renderRecipeRows2(){
     var wrap = document.getElementById('recipe-rows-2');
     if(!wrap) return;
@@ -2179,7 +2239,7 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     renderRecipeRows2();
   };
 
-  // ---------- 2回目のカラー：ページ全体の表示切替 ----------
+  // ---------- 2回目の薬剤：ページ全体の表示切替 ----------
   window.togglePage2 = function(){
     state.page2Enabled = !state.page2Enabled;
     var section = document.getElementById('page2-section');
@@ -2193,11 +2253,12 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
       renderRecipeRows2();
       renderOxidantChips2();
       renderApplicationChips2();
+      renderCareChips2();
       var existingMinutes2 = parseMinutesFromTimeText(document.getElementById('tf-time-2').value);
       setTimeout(function(){ setTimePickerValue2(existingMinutes2); }, 0);
     } else {
       section.style.display = 'none';
-      btn.textContent = '＋ 2回目のカラーを追加';
+      btn.textContent = '＋ 2回目の薬剤を追加';
     }
   };
   window.removePage2 = function(){
@@ -2205,11 +2266,12 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     state.recipeRows2 = [];
     state.selectedOxidant2 = [];
     state.selectedApplication2 = [];
+    state.selectedCare2 = [];
     state.page2Enabled = false;
     document.getElementById('tf-time-2').value = '';
     document.getElementById('time-picker-value-2').textContent = 'スクロールして選択（〜120分）';
     document.getElementById('page2-section').style.display = 'none';
-    document.getElementById('page2-toggle-btn').textContent = '＋ 2回目のカラーを追加';
+    document.getElementById('page2-toggle-btn').textContent = '＋ 2回目の薬剤を追加';
     toast('2回目の内容を削除しました');
   };
 
@@ -2346,6 +2408,31 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     if(idx !== -1){ state.selectedApplication2.splice(idx, 1); }
     else { state.selectedApplication2.push(item); }
     renderApplicationChips2();
+  };
+
+  // ---------- ケア（2回目）：⑧ケアの項目リストを使った独立した選択 ----------
+  function renderCareChips2(){
+    var el = document.getElementById('care-chips-2');
+    if(!el) return;
+    var items = state.menuCat.care || [];
+    if(items.length === 0){
+      el.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);">項目が登録されていません。上の「⑧ ケア」の「編集」から追加できます。</div>';
+      return;
+    }
+    var html = '';
+    items.forEach(function(item, i){
+      var active = (state.selectedCare2.indexOf(item) !== -1) ? ' active' : '';
+      html += '<button type="button" class="kt-menu-chip'+active+'" onclick="toggleCareSelect2('+i+')">'+escapeHtml(item)+'</button>';
+    });
+    el.innerHTML = html;
+  }
+  window.toggleCareSelect2 = function(index){
+    var item = (state.menuCat.care || [])[index];
+    if(!item) return;
+    var idx = state.selectedCare2.indexOf(item);
+    if(idx !== -1){ state.selectedCare2.splice(idx, 1); }
+    else { state.selectedCare2.push(item); }
+    renderCareChips2();
   };
   window.toggleApplicationEditor = function(){
     state.applicationEditorOpen = !state.applicationEditorOpen;
@@ -2591,119 +2678,68 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     toast('初期メニューに戻しました');
   };
 
-  window.toggleMenuEditorA = function(){
-    state.menuEditorAOpen = !state.menuEditorAOpen;
-    var panel = document.getElementById('menu-a-editor');
-    var link = document.getElementById('menu-a-edit-link');
-    if(state.menuEditorAOpen){
+  window.toggleMenuCatEditor = function(catKey){
+    state.menuCatEditorOpen[catKey] = !state.menuCatEditorOpen[catKey];
+    var panel = document.getElementById('menu-'+catKey+'-editor');
+    var link = document.getElementById('menu-'+catKey+'-edit-link');
+    if(state.menuCatEditorOpen[catKey]){
       panel.style.display = 'block';
       link.textContent = '閉じる';
-      renderMenuEditorRowsA();
+      renderMenuCatEditorRows(catKey);
     } else {
       panel.style.display = 'none';
       link.textContent = '編集';
     }
   };
-  function closeMenuEditorA(){
-    state.menuEditorAOpen = false;
-    var panel = document.getElementById('menu-a-editor');
-    var link = document.getElementById('menu-a-edit-link');
+  function closeMenuCatEditor(catKey){
+    state.menuCatEditorOpen[catKey] = false;
+    var panel = document.getElementById('menu-'+catKey+'-editor');
+    var link = document.getElementById('menu-'+catKey+'-edit-link');
     if(panel) panel.style.display = 'none';
     if(link) link.textContent = '編集';
   }
-  function renderMenuEditorRowsA(){
-    var wrap = document.getElementById('menu-a-editor-rows');
+  function closeAllMenuCatEditors(){
+    MENU_CAT_KEYS.forEach(function(k){ closeMenuCatEditor(k); });
+  }
+  function renderMenuCatEditorRows(catKey){
+    var wrap = document.getElementById('menu-'+catKey+'-editor-rows');
+    if(!wrap) return;
+    var items = state.menuCat[catKey] || [];
     var html = '';
-    state.menuItemsA.forEach(function(item, i){
+    items.forEach(function(item, i){
       html += '<div class="kt-menu-edit-row">' +
-        '<input type="text" value="'+escapeHtml(item)+'" data-idx="'+i+'" onchange="updateMenuEditRowA('+i+', this.value)">' +
-        '<button type="button" onclick="removeMenuEditRowA('+i+')" title="削除">✕</button>' +
+        '<input type="text" value="'+escapeHtml(item)+'" data-idx="'+i+'" onchange="updateMenuCatEditRow(\''+catKey+'\','+i+', this.value)">' +
+        '<button type="button" onclick="removeMenuCatEditRow(\''+catKey+'\','+i+')" title="削除">✕</button>' +
       '</div>';
     });
     wrap.innerHTML = html;
   }
-  window.updateMenuEditRowA = function(index, value){
-    state.menuItemsA[index] = value;
+  window.updateMenuCatEditRow = function(catKey, index, value){
+    state.menuCat[catKey][index] = value;
   };
-  window.removeMenuEditRowA = function(index){
-    state.menuItemsA.splice(index, 1);
-    renderMenuEditorRowsA();
+  window.removeMenuCatEditRow = function(catKey, index){
+    state.menuCat[catKey].splice(index, 1);
+    renderMenuCatEditorRows(catKey);
   };
-  window.addMenuEditRowA = function(){
-    state.menuItemsA.push('新しいメニュー');
-    renderMenuEditorRowsA();
+  window.addMenuCatEditRow = function(catKey){
+    state.menuCat[catKey].push('新しいメニュー');
+    renderMenuCatEditorRows(catKey);
   };
-  window.saveMenuItemsA = async function(){
-    state.menuItemsA = state.menuItemsA.map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
-    await saveMenuItemsAToStorage(state.menuItemsA);
-    closeMenuEditorA();
-    renderMenuChipsA();
+  window.saveMenuCatItems = async function(catKey){
+    state.menuCat[catKey] = state.menuCat[catKey].map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+    await saveMenuCatToStorage(catKey, state.menuCat[catKey]);
+    closeMenuCatEditor(catKey);
+    renderMenuCatChips(catKey);
+    if(catKey === 'care') renderCareChips2();
     toast('メニューを保存しました');
   };
-  window.resetMenuItemsA = async function(){
+  window.resetMenuCatItems = async function(catKey){
     if(!confirm('メニューボタンを初期の項目に戻します。よろしいですか？')) return;
-    state.menuItemsA = DEFAULT_MENU_ITEMS_A.slice();
-    await saveMenuItemsAToStorage(state.menuItemsA);
-    renderMenuEditorRowsA();
-    renderMenuChipsA();
-    toast('初期メニューに戻しました');
-  };
-
-  window.toggleMenuEditorB = function(){
-    state.menuEditorBOpen = !state.menuEditorBOpen;
-    var panel = document.getElementById('menu-b-editor');
-    var link = document.getElementById('menu-b-edit-link');
-    if(state.menuEditorBOpen){
-      panel.style.display = 'block';
-      link.textContent = '閉じる';
-      renderMenuEditorRowsB();
-    } else {
-      panel.style.display = 'none';
-      link.textContent = '編集';
-    }
-  };
-  function closeMenuEditorB(){
-    state.menuEditorBOpen = false;
-    var panel = document.getElementById('menu-b-editor');
-    var link = document.getElementById('menu-b-edit-link');
-    if(panel) panel.style.display = 'none';
-    if(link) link.textContent = '編集';
-  }
-  function renderMenuEditorRowsB(){
-    var wrap = document.getElementById('menu-b-editor-rows');
-    var html = '';
-    state.menuItemsB.forEach(function(item, i){
-      html += '<div class="kt-menu-edit-row">' +
-        '<input type="text" value="'+escapeHtml(item)+'" data-idx="'+i+'" onchange="updateMenuEditRowB('+i+', this.value)">' +
-        '<button type="button" onclick="removeMenuEditRowB('+i+')" title="削除">✕</button>' +
-      '</div>';
-    });
-    wrap.innerHTML = html;
-  }
-  window.updateMenuEditRowB = function(index, value){
-    state.menuItemsB[index] = value;
-  };
-  window.removeMenuEditRowB = function(index){
-    state.menuItemsB.splice(index, 1);
-    renderMenuEditorRowsB();
-  };
-  window.addMenuEditRowB = function(){
-    state.menuItemsB.push('新しいメニュー');
-    renderMenuEditorRowsB();
-  };
-  window.saveMenuItemsB = async function(){
-    state.menuItemsB = state.menuItemsB.map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
-    await saveMenuItemsBToStorage(state.menuItemsB);
-    closeMenuEditorB();
-    renderMenuChipsB();
-    toast('メニューを保存しました');
-  };
-  window.resetMenuItemsB = async function(){
-    if(!confirm('メニューボタンを初期の項目に戻します。よろしいですか？')) return;
-    state.menuItemsB = DEFAULT_MENU_ITEMS_B.slice();
-    await saveMenuItemsBToStorage(state.menuItemsB);
-    renderMenuEditorRowsB();
-    renderMenuChipsB();
+    state.menuCat[catKey] = DEFAULT_MENU_CAT[catKey].slice();
+    await saveMenuCatToStorage(catKey, state.menuCat[catKey]);
+    renderMenuCatEditorRows(catKey);
+    renderMenuCatChips(catKey);
+    if(catKey === 'care') renderCareChips2();
     toast('初期メニューに戻しました');
   };
 
@@ -2869,6 +2905,7 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     var recipe2 = page2Enabled ? buildRecipeTextFromRows(state.recipeRows2) : '';
     var oxidantChoices2 = page2Enabled ? state.selectedOxidant2.slice() : [];
     var applicationMethods2 = page2Enabled ? state.selectedApplication2.slice() : [];
+    var careChoices2 = page2Enabled ? state.selectedCare2.slice() : [];
     var time2 = page2Enabled ? document.getElementById('tf-time-2').value.trim() : '';
 
     var time = document.getElementById('tf-time').value.trim();
@@ -2885,13 +2922,13 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     if(state.editingTreatmentId){
       var t = state.currentTreatments.find(function(x){ return x.id === state.editingTreatmentId; });
       t.date = date; t.recipe = recipe; t.recipeItems = recipeItems; t.menuChoices = menuChoices; t.oxidantChoices = oxidantChoices; t.applicationMethods = applicationMethods; t.time = time; t.totalGram = totalGram; t.price = price; t.staff = staff; t.memo = memo;
-      t.page2Enabled = page2Enabled; t.recipe2 = recipe2; t.recipeItems2 = recipeItems2; t.oxidantChoices2 = oxidantChoices2; t.applicationMethods2 = applicationMethods2; t.time2 = time2; t.totalGram2 = totalGram2;
+      t.page2Enabled = page2Enabled; t.recipe2 = recipe2; t.recipeItems2 = recipeItems2; t.oxidantChoices2 = oxidantChoices2; t.applicationMethods2 = applicationMethods2; t.careChoices2 = careChoices2; t.time2 = time2; t.totalGram2 = totalGram2;
       t.beforePhoto = pendingPhotos.before; t.afterPhoto = pendingPhotos.after; t.stylePhoto = pendingPhotos.style;
     } else {
       state.currentTreatments.push({
         id: 't_' + Date.now() + '_' + Math.floor(Math.random()*1000),
         date: date, recipe: recipe, recipeItems: recipeItems, menuChoices: menuChoices, oxidantChoices: oxidantChoices, applicationMethods: applicationMethods, time: time, totalGram: totalGram, price: price, staff: staff, memo: memo,
-        page2Enabled: page2Enabled, recipe2: recipe2, recipeItems2: recipeItems2, oxidantChoices2: oxidantChoices2, applicationMethods2: applicationMethods2, time2: time2, totalGram2: totalGram2,
+        page2Enabled: page2Enabled, recipe2: recipe2, recipeItems2: recipeItems2, oxidantChoices2: oxidantChoices2, applicationMethods2: applicationMethods2, careChoices2: careChoices2, time2: time2, totalGram2: totalGram2,
         beforePhoto: pendingPhotos.before, afterPhoto: pendingPhotos.after, stylePhoto: pendingPhotos.style,
         createdAt: Date.now()
       });
@@ -2997,44 +3034,45 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
       await saveMeta({ next: 3 });
     }
     state.customers = idx;
-    var storedA = await loadMenuItemsA();
-    var storedB = await loadMenuItemsB();
-    if(storedA === null && storedB === null){
-      // ①②分割前の旧メニュー一覧が残っていれば、カテゴリに応じて振り分けて移行する
-      var legacy = await loadLegacyMenuItems();
-      if(legacy && legacy.length){
-        state.menuItemsA = [];
-        state.menuItemsB = [];
-        legacy.forEach(function(item){
-          if(LEGACY_MENU_CATEGORY_A.indexOf(item) !== -1){ state.menuItemsA.push(item); }
-          else { state.menuItemsB.push(item); }
-        });
-        if(state.menuItemsA.length === 0){ state.menuItemsA = DEFAULT_MENU_ITEMS_A.slice(); }
-        if(state.menuItemsB.length === 0){ state.menuItemsB = DEFAULT_MENU_ITEMS_B.slice(); }
-      } else {
-        state.menuItemsA = DEFAULT_MENU_ITEMS_A.slice();
-        state.menuItemsB = DEFAULT_MENU_ITEMS_B.slice();
-      }
-      await saveMenuItemsAToStorage(state.menuItemsA);
-      await saveMenuItemsBToStorage(state.menuItemsB);
-    } else {
-      state.menuItemsA = storedA || DEFAULT_MENU_ITEMS_A.slice();
-      state.menuItemsB = storedB || DEFAULT_MENU_ITEMS_B.slice();
+
+    // 5カテゴリのメニューボタンを読み込み。未作成なら旧バージョンから移行する
+    var storedCat = {};
+    var anyStored = false;
+    for(var mi=0; mi<MENU_CAT_KEYS.length; mi++){
+      var k = MENU_CAT_KEYS[mi];
+      storedCat[k] = await loadMenuCatRaw(k);
+      if(storedCat[k] !== null) anyStored = true;
     }
-    var menuAChanged = false;
-    MENU_ITEMS_A_ADDED_2026_07.forEach(function(item){
-      if(state.menuItemsA.indexOf(item) === -1){ state.menuItemsA.push(item); menuAChanged = true; }
-    });
-    if(menuAChanged){ await saveMenuItemsAToStorage(state.menuItemsA); }
-    MENU_ITEMS_A_ADDED_2026_07_V2.forEach(function(item){
-      if(state.menuItemsA.indexOf(item) === -1){ state.menuItemsA.push(item); menuAChanged = true; }
-    });
-    if(menuAChanged){ await saveMenuItemsAToStorage(state.menuItemsA); }
-    var menuBChanged = false;
-    MENU_ITEMS_B_ADDED_2026_07.forEach(function(item){
-      if(state.menuItemsB.indexOf(item) === -1){ state.menuItemsB.push(item); menuBChanged = true; }
-    });
-    if(menuBChanged){ await saveMenuItemsBToStorage(state.menuItemsB); }
+    if(!anyStored){
+      // 旧①②（カット・スパ・アレンジ ／ カラー・パーマ・ストレート・トリートメント）からの移行
+      var oldA = await loadMenuItemsA();
+      var oldB = await loadMenuItemsB();
+      if(oldA === null && oldB === null){
+        // さらに古い、分割前の単一メニュー一覧が残っている場合
+        var legacy = await loadLegacyMenuItems();
+        if(legacy && legacy.length){ oldA = legacy; oldB = []; }
+      }
+      MENU_CAT_KEYS.forEach(function(k){ state.menuCat[k] = []; });
+      (oldA || []).forEach(function(item){
+        var cat = legacyItemToCat(item) || 'cut';
+        if(state.menuCat[cat].indexOf(item) === -1) state.menuCat[cat].push(item);
+      });
+      (oldB || []).forEach(function(item){
+        var cat = legacyItemToCat(item) || 'color';
+        if(state.menuCat[cat].indexOf(item) === -1) state.menuCat[cat].push(item);
+      });
+      MENU_CAT_KEYS.forEach(function(k){
+        if(state.menuCat[k].length === 0){ state.menuCat[k] = DEFAULT_MENU_CAT[k].slice(); }
+      });
+      for(var si=0; si<MENU_CAT_KEYS.length; si++){
+        await saveMenuCatToStorage(MENU_CAT_KEYS[si], state.menuCat[MENU_CAT_KEYS[si]]);
+      }
+    } else {
+      MENU_CAT_KEYS.forEach(function(k){
+        state.menuCat[k] = storedCat[k] || DEFAULT_MENU_CAT[k].slice();
+      });
+    }
+
     state.staffList = await loadStaffList();
     state.oxidantItems = await loadOxidantItems();
     state.applicationItems = await loadApplicationItems();
