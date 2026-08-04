@@ -968,6 +968,7 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
   var _cache = {};
   var _cacheLoaded = false;
   var _loadPromise = null;
+  var PENDING_LS_KEY = '__karte_pending_sync__';
   var _pending = {};   // {key: {action:'set'|'delete', value?}}
   var _saveTimer = null;
   var _syncEl = null;
@@ -981,10 +982,20 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     if(el) el.textContent = s;
   }
 
+  function loadPendingFromLS(){
+    try{
+      var raw = localStorage.getItem(PENDING_LS_KEY);
+      if(raw) _pending = JSON.parse(raw) || {};
+    }catch(e){ _pending = {}; }
+  }
+  function savePendingToLS(){
+    try{ localStorage.setItem(PENDING_LS_KEY, JSON.stringify(_pending)); }catch(e){}
+  }
+
   function loadFromLS(){
     for(var i=0;i<localStorage.length;i++){
       var k=localStorage.key(i);
-      if(k) _cache[k]=localStorage.getItem(k);
+      if(k && k !== PENDING_LS_KEY) _cache[k]=localStorage.getItem(k);
     }
   }
 
@@ -992,6 +1003,7 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     return new Promise(function(resolve){
       // まずローカル保存分を必ず読み込んでおく（サーバー側に無いキーでも消えないように）
       loadFromLS();
+      loadPendingFromLS();
       if(!KARTE_GAS_URL || KARTE_GAS_URL.indexOf('http')!==0){
         _cacheLoaded=true; resolve(); return;
       }
@@ -1000,18 +1012,21 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
       var cb='karteCb_'+Date.now()+'_'+Math.floor(Math.random()*9999);
       var t=setTimeout(function(){
         if(!done){ done=true; delete window[cb];
-          _cacheLoaded=true; setSyncStatus(''); resolve(); }
+          _cacheLoaded=true; setSyncStatus(''); resolve(); scheduleFlushIfPending(); }
       },6000);
       window[cb]=function(data){
         clearTimeout(t);
         if(!done){ done=true; delete window[cb]; sc&&sc.remove();
           if(data&&data.items){
             data.items.forEach(function(it){
+              // まだサーバーに送れていないローカル変更があるキーは、サーバーの古い値で上書きしない
+              if(_pending.hasOwnProperty(it.key)) return;
               _cache[it.key]=it.value;
               try{ localStorage.setItem(it.key, it.value); }catch(e){}
             });
           }
           _cacheLoaded=true; setSyncStatus('同期済み'); resolve();
+          scheduleFlushIfPending();
         }
       };
       var sc=document.createElement('script');
@@ -1031,26 +1046,57 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     return _loadPromise;
   }
 
+  function scheduleFlushIfPending(){
+    if(Object.keys(_pending).length){
+      clearTimeout(_saveTimer);
+      _saveTimer=setTimeout(flush, 400);
+    }
+  }
+
   function scheduleSave(key, action, value){
     _pending[key]={action:action, value:value};
+    savePendingToLS();
     clearTimeout(_saveTimer);
     _saveTimer=setTimeout(flush, 600);
   }
 
   function flush(){
     if(!KARTE_GAS_URL || KARTE_GAS_URL.indexOf('http')!==0) return;
-    var items=Object.keys(_pending).map(function(k){
-      return {key:k, action:_pending[k].action, value:_pending[k].value};
+    var keys = Object.keys(_pending);
+    if(!keys.length) return;
+    var snapshot = {};
+    keys.forEach(function(k){ snapshot[k] = _pending[k]; });
+    var items = keys.map(function(k){
+      return {key:k, action:snapshot[k].action, value:snapshot[k].value};
     });
-    if(!items.length) return;
-    _pending={};
     setSyncStatus('保存中…');
     fetch(KARTE_GAS_URL,{
       method:'POST', mode:'no-cors',
       body:JSON.stringify({action:'bulkSet', items:items})
-    }).then(function(){ setSyncStatus('同期済み'); })
-    .catch(function(){ setSyncStatus('保存エラー（ローカルには保存済み）'); });
+    }).then(function(){
+      // 送信中に新しい変更が入っていなければ「未送信」から取り除く（入っていれば次回に持ち越す）
+      keys.forEach(function(k){ if(_pending[k] === snapshot[k]) delete _pending[k]; });
+      savePendingToLS();
+      setSyncStatus('同期済み');
+    })
+    .catch(function(){
+      setSyncStatus('保存エラー（ローカルには保存済み・再接続時に自動送信します）');
+    });
   }
+
+  // タブを閉じる／バックグラウンドに移る直前にも、未送信分があれば即座に送信を試みる
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'hidden' && Object.keys(_pending).length){
+      clearTimeout(_saveTimer);
+      flush();
+    }
+  });
+  window.addEventListener('pagehide', function(){
+    if(Object.keys(_pending).length){
+      clearTimeout(_saveTimer);
+      flush();
+    }
+  });
 
   window.storage = {
     get: async function(key){
