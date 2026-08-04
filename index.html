@@ -143,6 +143,12 @@
   .kt-menu-head{
     display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
   }
+  .kt-menu-head-toggle{cursor:pointer;}
+  .kt-collapse-arrow{
+    display:inline-block;font-size:11px;color:var(--accent);width:12px;
+    transition:transform .15s ease;
+  }
+  .kt-collapse-arrow.open{transform:rotate(90deg);}
   .kt-menu-edit-link{
     border:none;background:none;color:var(--accent);font-size:12px;font-weight:700;
     font-family:var(--font-body);cursor:pointer;padding:2px 4px;
@@ -150,6 +156,7 @@
   .kt-menu-chips{
     display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;
   }
+  .kt-menu-chips.collapsed{display:none;}
   .kt-menu-chip{
     padding:9px 14px;border-radius:20px;border:1px solid var(--sage);
     background:var(--sage-soft);color:var(--ink);font-size:13px;font-weight:600;
@@ -742,11 +749,11 @@
       </div>
 
       <div class="kt-card">
-        <div class="kt-menu-head">
-          <div class="kt-card-label" style="margin-bottom:0;">① カット</div>
-          <button class="kt-menu-edit-link" onclick="toggleMenuCatEditor('cut')" id="menu-cut-edit-link">編集</button>
+        <div class="kt-menu-head kt-menu-head-toggle" onclick="toggleChipsCollapse('menu-cut-chips','menu-cut-arrow')">
+          <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="menu-cut-arrow">▸</span>① カット</div>
+          <button class="kt-menu-edit-link" onclick="event.stopPropagation();toggleMenuCatEditor('cut')" id="menu-cut-edit-link">編集</button>
         </div>
-        <div class="kt-menu-chips" id="menu-cut-chips"></div>
+        <div class="kt-menu-chips collapsed" id="menu-cut-chips"></div>
         <div class="kt-menu-editor" id="menu-cut-editor" style="display:none;">
           <div id="menu-cut-editor-rows"></div>
           <div class="kt-menu-editor-actions">
@@ -758,11 +765,11 @@
           </div>
         </div>
 
-        <div class="kt-menu-head" style="margin-top:16px;">
-          <div class="kt-card-label" style="margin-bottom:0;">② カラー</div>
-          <button class="kt-menu-edit-link" onclick="toggleMenuCatEditor('color')" id="menu-color-edit-link">編集</button>
+        <div class="kt-menu-head kt-menu-head-toggle" style="margin-top:16px;" onclick="toggleChipsCollapse('menu-color-chips','menu-color-arrow')">
+          <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="menu-color-arrow">▸</span>② カラー</div>
+          <button class="kt-menu-edit-link" onclick="event.stopPropagation();toggleMenuCatEditor('color')" id="menu-color-edit-link">編集</button>
         </div>
-        <div class="kt-menu-chips" id="menu-color-chips"></div>
+        <div class="kt-menu-chips collapsed" id="menu-color-chips"></div>
         <div class="kt-menu-editor" id="menu-color-editor" style="display:none;">
           <div id="menu-color-editor-rows"></div>
           <div class="kt-menu-editor-actions">
@@ -774,11 +781,11 @@
           </div>
         </div>
 
-        <div class="kt-menu-head" style="margin-top:16px;">
-          <div class="kt-card-label" style="margin-bottom:0;">③ パーマ＆ストレート</div>
-          <button class="kt-menu-edit-link" onclick="toggleMenuCatEditor('perm')" id="menu-perm-edit-link">編集</button>
+        <div class="kt-menu-head kt-menu-head-toggle" style="margin-top:16px;" onclick="toggleChipsCollapse('menu-perm-chips','menu-perm-arrow')">
+          <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="menu-perm-arrow">▸</span>③ パーマ＆ストレート</div>
+          <button class="kt-menu-edit-link" onclick="event.stopPropagation();toggleMenuCatEditor('perm')" id="menu-perm-edit-link">編集</button>
         </div>
-        <div class="kt-menu-chips" id="menu-perm-chips"></div>
+        <div class="kt-menu-chips collapsed" id="menu-perm-chips"></div>
         <div class="kt-menu-editor" id="menu-perm-editor" style="display:none;">
           <div id="menu-perm-editor-rows"></div>
           <div class="kt-menu-editor-actions">
@@ -790,11 +797,43 @@
           </div>
         </div>
 
-        <div class="kt-menu-head" style="margin-top:16px;">
-          <div class="kt-card-label" style="margin-bottom:0;">④ トリートメント＆スパ</div>
-          <button class="kt-menu-edit-link" onclick="toggleMenuCatEditor('treatment')" id="menu-treatment-edit-link">編集</button>
+        <div class="kt-menu-head kt-menu-head-toggle" style="margin-top:10px;" onclick="toggleChipsCollapse('permrod-chips','permrod-arrow')">
+          <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="permrod-arrow">▸</span>パーマロッド</div>
+          <button class="kt-menu-edit-link" onclick="event.stopPropagation();togglePermRodEditor()" id="permrod-edit-link">編集</button>
         </div>
-        <div class="kt-menu-chips" id="menu-treatment-chips"></div>
+        <div class="kt-menu-chips collapsed" id="permrod-chips"></div>
+        <div class="kt-menu-editor" id="permrod-editor" style="display:none;">
+          <div id="permrod-editor-rows"></div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-add-btn" onclick="addPermRodEditRow()">＋ 項目を追加</button>
+            <button class="kt-menu-save-btn" onclick="savePermRodItems()">保存して閉じる</button>
+          </div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-reset-btn" onclick="resetPermRodItems()">初期メニューに戻す</button>
+          </div>
+        </div>
+
+        <div class="kt-menu-head kt-menu-head-toggle" style="margin-top:10px;" onclick="toggleChipsCollapse('iron-chips','iron-arrow')">
+          <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="iron-arrow">▸</span>アイロン＆温度</div>
+          <button class="kt-menu-edit-link" onclick="event.stopPropagation();toggleIronEditor()" id="iron-edit-link">編集</button>
+        </div>
+        <div class="kt-menu-chips collapsed" id="iron-chips"></div>
+        <div class="kt-menu-editor" id="iron-editor" style="display:none;">
+          <div id="iron-editor-rows"></div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-add-btn" onclick="addIronEditRow()">＋ 項目を追加</button>
+            <button class="kt-menu-save-btn" onclick="saveIronItems()">保存して閉じる</button>
+          </div>
+          <div class="kt-menu-editor-actions">
+            <button class="kt-menu-reset-btn" onclick="resetIronItems()">初期メニューに戻す</button>
+          </div>
+        </div>
+
+        <div class="kt-menu-head kt-menu-head-toggle" style="margin-top:16px;" onclick="toggleChipsCollapse('menu-treatment-chips','menu-treatment-arrow')">
+          <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="menu-treatment-arrow">▸</span>④ トリートメント＆スパ</div>
+          <button class="kt-menu-edit-link" onclick="event.stopPropagation();toggleMenuCatEditor('treatment')" id="menu-treatment-edit-link">編集</button>
+        </div>
+        <div class="kt-menu-chips collapsed" id="menu-treatment-chips"></div>
         <div class="kt-menu-editor" id="menu-treatment-editor" style="display:none;">
           <div id="menu-treatment-editor-rows"></div>
           <div class="kt-menu-editor-actions">
@@ -806,11 +845,11 @@
           </div>
         </div>
 
-        <div class="kt-menu-head" style="margin-top:16px;">
-          <div class="kt-card-label" style="margin-bottom:0;">⑤ アレンジ＆メイク</div>
-          <button class="kt-menu-edit-link" onclick="toggleMenuCatEditor('arrange')" id="menu-arrange-edit-link">編集</button>
+        <div class="kt-menu-head kt-menu-head-toggle" style="margin-top:16px;" onclick="toggleChipsCollapse('menu-arrange-chips','menu-arrange-arrow')">
+          <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="menu-arrange-arrow">▸</span>⑤ アレンジ＆メイク</div>
+          <button class="kt-menu-edit-link" onclick="event.stopPropagation();toggleMenuCatEditor('arrange')" id="menu-arrange-edit-link">編集</button>
         </div>
-        <div class="kt-menu-chips" id="menu-arrange-chips"></div>
+        <div class="kt-menu-chips collapsed" id="menu-arrange-chips"></div>
         <div class="kt-menu-editor" id="menu-arrange-editor" style="display:none;">
           <div id="menu-arrange-editor-rows"></div>
           <div class="kt-menu-editor-actions">
@@ -822,11 +861,11 @@
           </div>
         </div>
 
-        <div class="kt-menu-head" style="margin-top:16px;">
-          <div class="kt-card-label" style="margin-bottom:0;">⑥ オキシ</div>
-          <button class="kt-menu-edit-link" onclick="toggleOxidantEditor()" id="oxidant-edit-link">編集</button>
+        <div class="kt-menu-head kt-menu-head-toggle" style="margin-top:16px;" onclick="toggleChipsCollapse('oxidant-chips','oxidant-arrow')">
+          <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="oxidant-arrow">▸</span>⑥ オキシ</div>
+          <button class="kt-menu-edit-link" onclick="event.stopPropagation();toggleOxidantEditor()" id="oxidant-edit-link">編集</button>
         </div>
-        <div class="kt-menu-chips" id="oxidant-chips"></div>
+        <div class="kt-menu-chips collapsed" id="oxidant-chips"></div>
         <div class="kt-menu-editor" id="oxidant-editor" style="display:none;">
           <div id="oxidant-editor-rows"></div>
           <div class="kt-menu-editor-actions">
@@ -838,11 +877,11 @@
           </div>
         </div>
 
-        <div class="kt-menu-head" style="margin-top:16px;">
-          <div class="kt-card-label" style="margin-bottom:0;">⑦ 塗布方法</div>
-          <button class="kt-menu-edit-link" onclick="toggleApplicationEditor()" id="application-edit-link">編集</button>
+        <div class="kt-menu-head kt-menu-head-toggle" style="margin-top:16px;" onclick="toggleChipsCollapse('application-chips','application-arrow')">
+          <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="application-arrow">▸</span>⑦ 塗布方法</div>
+          <button class="kt-menu-edit-link" onclick="event.stopPropagation();toggleApplicationEditor()" id="application-edit-link">編集</button>
         </div>
-        <div class="kt-menu-chips" id="application-chips"></div>
+        <div class="kt-menu-chips collapsed" id="application-chips"></div>
         <div class="kt-menu-editor" id="application-editor" style="display:none;">
           <div id="application-editor-rows"></div>
           <div class="kt-menu-editor-actions">
@@ -854,11 +893,11 @@
           </div>
         </div>
 
-        <div class="kt-menu-head" style="margin-top:16px;">
-          <div class="kt-card-label" style="margin-bottom:0;">⑧ ケア</div>
-          <button class="kt-menu-edit-link" onclick="toggleMenuCatEditor('care')" id="menu-care-edit-link">編集</button>
+        <div class="kt-menu-head kt-menu-head-toggle" style="margin-top:16px;" onclick="toggleChipsCollapse('menu-care-chips','menu-care-arrow')">
+          <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="menu-care-arrow">▸</span>⑧ ケア</div>
+          <button class="kt-menu-edit-link" onclick="event.stopPropagation();toggleMenuCatEditor('care')" id="menu-care-edit-link">編集</button>
         </div>
-        <div class="kt-menu-chips" id="menu-care-chips"></div>
+        <div class="kt-menu-chips collapsed" id="menu-care-chips"></div>
         <div class="kt-menu-editor" id="menu-care-editor" style="display:none;">
           <div id="menu-care-editor-rows"></div>
           <div class="kt-menu-editor-actions">
@@ -871,16 +910,29 @@
         </div>
 
         <div class="kt-card-label" style="margin-top:16px;">薬剤名・比率</div>
-        <div class="kt-recipe-pill-wrap" id="recipe-rows"></div>
-        <button type="button" class="kt-menu-add-btn" style="width:100%;margin-top:8px;" onclick="addRecipeRow()">＋ 枠を追加</button>
 
+        <div class="kt-card-label" style="margin-top:6px;margin-bottom:6px;color:var(--sage);">根本</div>
+        <div class="kt-recipe-pill-wrap" id="recipe-rows-root"></div>
+        <button type="button" class="kt-menu-add-btn" style="width:100%;margin-top:8px;" onclick="addRecipeRowG('r1')">＋ 枠を追加</button>
         <div class="kt-field" style="margin-top:12px;margin-bottom:0;">
-          <label>1剤 総合グラム</label>
+          <label>根本 総合グラム</label>
           <div style="position:relative;">
-            <input id="tf-total-gram" type="number" inputmode="decimal" min="0" step="0.5" placeholder="例）60" oninput="renderGramSplit()" style="padding-right:32px;">
+            <input id="tf-total-gram-root" type="number" inputmode="decimal" min="0" step="0.5" placeholder="例）60" oninput="renderGramSplitG('r1')" style="padding-right:32px;">
             <span style="position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--ink-soft);font-size:13px;">g</span>
           </div>
-          <div id="gram-split-result" style="margin-top:8px;font-size:12.5px;color:var(--ink-soft);line-height:1.8;"></div>
+          <div id="gram-split-result-root" style="margin-top:8px;font-size:12.5px;color:var(--ink-soft);line-height:1.8;"></div>
+        </div>
+
+        <div class="kt-card-label" style="margin-top:16px;margin-bottom:6px;color:var(--warn);">毛先</div>
+        <div class="kt-recipe-pill-wrap" id="recipe-rows-tip"></div>
+        <button type="button" class="kt-menu-add-btn" style="width:100%;margin-top:8px;" onclick="addRecipeRowG('t1')">＋ 枠を追加</button>
+        <div class="kt-field" style="margin-top:12px;margin-bottom:0;">
+          <label>毛先 総合グラム</label>
+          <div style="position:relative;">
+            <input id="tf-total-gram-tip" type="number" inputmode="decimal" min="0" step="0.5" placeholder="例）60" oninput="renderGramSplitG('t1')" style="padding-right:32px;">
+            <span style="position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--ink-soft);font-size:13px;">g</span>
+          </div>
+          <div id="gram-split-result-tip" style="margin-top:8px;font-size:12.5px;color:var(--ink-soft);line-height:1.8;"></div>
         </div>
 
         <div class="kt-field" style="margin-top:16px;margin-bottom:0;">
@@ -897,26 +949,45 @@
 
         <div id="page2-section" style="display:none;">
           <div class="kt-card-label" style="margin-top:16px;">2回目の薬剤</div>
-          <div class="kt-recipe-pill-wrap" id="recipe-rows-2"></div>
-          <button type="button" class="kt-menu-add-btn" style="width:100%;margin-top:8px;" onclick="addRecipeRow2()">＋ 枠を追加</button>
 
+          <div class="kt-card-label" style="margin-top:6px;margin-bottom:6px;color:var(--sage);">根本（2回目）</div>
+          <div class="kt-recipe-pill-wrap" id="recipe-rows-root-2"></div>
+          <button type="button" class="kt-menu-add-btn" style="width:100%;margin-top:8px;" onclick="addRecipeRowG('r2')">＋ 枠を追加</button>
           <div class="kt-field" style="margin-top:12px;margin-bottom:0;">
-            <label>1剤 総合グラム（2回目）</label>
+            <label>根本 総合グラム（2回目）</label>
             <div style="position:relative;">
-              <input id="tf-total-gram-2" type="number" inputmode="decimal" min="0" step="0.5" placeholder="例）60" oninput="renderGramSplit2()" style="padding-right:32px;">
+              <input id="tf-total-gram-root-2" type="number" inputmode="decimal" min="0" step="0.5" placeholder="例）60" oninput="renderGramSplitG('r2')" style="padding-right:32px;">
               <span style="position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--ink-soft);font-size:13px;">g</span>
             </div>
-            <div id="gram-split-result-2" style="margin-top:8px;font-size:12.5px;color:var(--ink-soft);line-height:1.8;"></div>
+            <div id="gram-split-result-root-2" style="margin-top:8px;font-size:12.5px;color:var(--ink-soft);line-height:1.8;"></div>
           </div>
 
-          <div class="kt-card-label" style="margin-top:16px;margin-bottom:0;">オキシ（2回目）</div>
-          <div class="kt-menu-chips" id="oxidant-chips-2"></div>
+          <div class="kt-card-label" style="margin-top:16px;margin-bottom:6px;color:var(--warn);">毛先（2回目）</div>
+          <div class="kt-recipe-pill-wrap" id="recipe-rows-tip-2"></div>
+          <button type="button" class="kt-menu-add-btn" style="width:100%;margin-top:8px;" onclick="addRecipeRowG('t2')">＋ 枠を追加</button>
+          <div class="kt-field" style="margin-top:12px;margin-bottom:0;">
+            <label>毛先 総合グラム（2回目）</label>
+            <div style="position:relative;">
+              <input id="tf-total-gram-tip-2" type="number" inputmode="decimal" min="0" step="0.5" placeholder="例）60" oninput="renderGramSplitG('t2')" style="padding-right:32px;">
+              <span style="position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--ink-soft);font-size:13px;">g</span>
+            </div>
+            <div id="gram-split-result-tip-2" style="margin-top:8px;font-size:12.5px;color:var(--ink-soft);line-height:1.8;"></div>
+          </div>
 
-          <div class="kt-card-label" style="margin-top:16px;margin-bottom:0;">塗布（2回目）</div>
-          <div class="kt-menu-chips" id="application-chips-2"></div>
+          <div class="kt-menu-head kt-menu-head-toggle" style="margin-top:16px;" onclick="toggleChipsCollapse('oxidant-chips-2','oxidant-arrow-2')">
+            <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="oxidant-arrow-2">▸</span>オキシ（2回目）</div>
+          </div>
+          <div class="kt-menu-chips collapsed" id="oxidant-chips-2"></div>
 
-          <div class="kt-card-label" style="margin-top:16px;margin-bottom:0;">ケア（2回目）</div>
-          <div class="kt-menu-chips" id="care-chips-2"></div>
+          <div class="kt-menu-head kt-menu-head-toggle" style="margin-top:16px;" onclick="toggleChipsCollapse('application-chips-2','application-arrow-2')">
+            <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="application-arrow-2">▸</span>塗布（2回目）</div>
+          </div>
+          <div class="kt-menu-chips collapsed" id="application-chips-2"></div>
+
+          <div class="kt-menu-head kt-menu-head-toggle" style="margin-top:16px;" onclick="toggleChipsCollapse('care-chips-2','care-arrow-2')">
+            <div class="kt-card-label" style="margin-bottom:0;display:flex;align-items:center;gap:6px;"><span class="kt-collapse-arrow" id="care-arrow-2">▸</span>ケア（2回目）</div>
+          </div>
+          <div class="kt-menu-chips collapsed" id="care-chips-2"></div>
 
           <div class="kt-card-label" style="margin-top:16px;">タイム（放置時間・2回目）</div>
           <div class="kt-time-picker-wrap" style="height:110px;">
@@ -1140,15 +1211,20 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     menuCat: { cut:[], color:[], perm:[], treatment:[], arrange:[] }, // 5カテゴリのメニューボタン
     menuCatEditorOpen: { cut:false, color:false, perm:false, treatment:false, arrange:false },
     selectedMenu: [],         // 施術メニュー選択（薬剤名欄とは独立）
-    recipeRows: [],           // 薬剤名・比率の記入枠（追加編集可能）
+    recipeG: { r1:[], t1:[], r2:[], t2:[] }, // 薬剤名・比率（r1/t1=1回目 根本/毛先、r2/t2=2回目 根本/毛先）
     page2Enabled: false,      // 2回カラーする人用：2ページ目（薬剤名・オキシ・塗布）
-    recipeRows2: [],
     selectedOxidant2: [],
     selectedApplication2: [],
     selectedCare2: [],
     oxidantItems: [],         // オキシ選択ボタン（編集可能・複数選択）
     oxidantEditorOpen: false,
     selectedOxidant: [],
+    permRodItems: [],         // パーマロッド（編集可能・複数選択）
+    permRodEditorOpen: false,
+    selectedPermRod: [],
+    ironItems: [],            // アイロン＆温度（編集可能・複数選択）
+    ironEditorOpen: false,
+    selectedIron: [],
     applicationItems: [],     // 塗布ボタン（編集可能・複数選択）
     applicationEditorOpen: false,
     selectedApplication: [],
@@ -1197,6 +1273,8 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
   }
   var DEFAULT_STAFF_LIST = ['店主'];
   var DEFAULT_OXIDANT_ITEMS = ['6％','4.5％','3％','2.8％','ジェル2％','AC6％','AC3％','オリジナルOX','OX２倍','OX３倍'];
+  var DEFAULT_PERMROD_ITEMS = ['23','20'];
+  var DEFAULT_IRON_ITEMS = ['グランパーム','ラディアント','アドスト','Rアイロン','200℃','190℃','180℃'];
   var DEFAULT_APPLICATION_ITEMS = ['リタッチカラー','全体カラー','グレイタッチ','ゼロタッチ','１ｃｍ空けてタッチ','頭皮スプレー','顔まわりクリーム','ペーパー','ラップ','アルミ','リタッチストレート','全体ストレート'];
   var APPLICATION_ITEMS_ADDED_2026_07_V3 = ['リタッチストレート','全体ストレート'];
   var APPLICATION_ITEMS_ADDED_2026_07 = ['ペーパー','ラップ','アルミ'];
@@ -1310,6 +1388,26 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
   async function saveOxidantItemsToStorage(arr){
     try{ await window.storage.set('menu:oxidant-presets', JSON.stringify(arr), false); }
     catch(e){ console.error('save oxidant items failed', e); }
+  }
+  async function loadPermRodItems(){
+    try{
+      var r = await window.storage.get('menu:permrod-presets', false);
+      return r && r.value ? JSON.parse(r.value) : DEFAULT_PERMROD_ITEMS.slice();
+    }catch(e){ return DEFAULT_PERMROD_ITEMS.slice(); }
+  }
+  async function savePermRodItemsToStorage(arr){
+    try{ await window.storage.set('menu:permrod-presets', JSON.stringify(arr), false); }
+    catch(e){ console.error('save permrod items failed', e); }
+  }
+  async function loadIronItems(){
+    try{
+      var r = await window.storage.get('menu:iron-presets', false);
+      return r && r.value ? JSON.parse(r.value) : DEFAULT_IRON_ITEMS.slice();
+    }catch(e){ return DEFAULT_IRON_ITEMS.slice(); }
+  }
+  async function saveIronItemsToStorage(arr){
+    try{ await window.storage.set('menu:iron-presets', JSON.stringify(arr), false); }
+    catch(e){ console.error('save iron items failed', e); }
   }
   async function loadApplicationItems(){
     try{
@@ -1543,14 +1641,22 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
       html += '</div>';
       html += '<div class="kt-history-body">';
       if(t.price || t.price === 0) html += '<div class="kt-history-price">お支払い　¥'+Number(t.price).toLocaleString('ja-JP')+'</div>';
-      if(t.recipe) html += '<div class="kt-history-recipe">'+escapeHtml(t.recipe).replace(/\n/g,'<br>')+'</div>';
+      var recipeRootText = t.recipeRoot || t.recipe || '';
+      var recipeTipText = t.recipeTip || '';
+      if(recipeRootText) html += '<div class="kt-history-recipe"><b>根本：</b>'+escapeHtml(recipeRootText).replace(/\n/g,'<br>')+'</div>';
+      if(recipeTipText) html += '<div class="kt-history-recipe"><b>毛先：</b>'+escapeHtml(recipeTipText).replace(/\n/g,'<br>')+'</div>';
       if(t.menuChoices && t.menuChoices.length) html += '<div class="kt-history-tagline">メニュー：'+escapeHtml(t.menuChoices.join('、'))+'</div>';
       if(t.oxidantChoices && t.oxidantChoices.length) html += '<div class="kt-history-tagline">オキシ：'+escapeHtml(t.oxidantChoices.join('、'))+'</div>';
+      if(t.permRodChoices && t.permRodChoices.length) html += '<div class="kt-history-tagline">パーマロッド：'+escapeHtml(t.permRodChoices.join('、'))+'</div>';
+      if(t.ironChoices && t.ironChoices.length) html += '<div class="kt-history-tagline">アイロン＆温度：'+escapeHtml(t.ironChoices.join('、'))+'</div>';
       if(t.applicationMethods && t.applicationMethods.length) html += '<div class="kt-history-tagline">塗布：'+escapeHtml(t.applicationMethods.join('、'))+'</div>';
-      if(t.page2Enabled && (t.recipe2 || (t.oxidantChoices2&&t.oxidantChoices2.length) || (t.applicationMethods2&&t.applicationMethods2.length) || (t.careChoices2&&t.careChoices2.length) || t.time2)){
+      var recipeRoot2Text = t.recipeRoot2 || t.recipe2 || '';
+      var recipeTip2Text = t.recipeTip2 || '';
+      if(t.page2Enabled && (recipeRoot2Text || recipeTip2Text || (t.oxidantChoices2&&t.oxidantChoices2.length) || (t.applicationMethods2&&t.applicationMethods2.length) || (t.careChoices2&&t.careChoices2.length) || t.time2)){
         html += '<div class="kt-history-page2">';
         html += '<div class="kt-history-page2-label">2回目の薬剤</div>';
-        if(t.recipe2) html += '<div class="kt-history-recipe">'+escapeHtml(t.recipe2).replace(/\n/g,'<br>')+'</div>';
+        if(recipeRoot2Text) html += '<div class="kt-history-recipe"><b>根本：</b>'+escapeHtml(recipeRoot2Text).replace(/\n/g,'<br>')+'</div>';
+        if(recipeTip2Text) html += '<div class="kt-history-recipe"><b>毛先：</b>'+escapeHtml(recipeTip2Text).replace(/\n/g,'<br>')+'</div>';
         if(t.oxidantChoices2 && t.oxidantChoices2.length) html += '<div class="kt-history-tagline">オキシ：'+escapeHtml(t.oxidantChoices2.join('、'))+'</div>';
         if(t.applicationMethods2 && t.applicationMethods2.length) html += '<div class="kt-history-tagline">塗布：'+escapeHtml(t.applicationMethods2.join('、'))+'</div>';
         if(t.careChoices2 && t.careChoices2.length) html += '<div class="kt-history-tagline">ケア：'+escapeHtml(t.careChoices2.join('、'))+'</div>';
@@ -1780,11 +1886,15 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     state.editingTreatmentId = null;
     pendingPhotos = { style: null, before: null, after: null };
     document.getElementById('tf-date').value = todayStr();
-    state.recipeRows = [{name:'',ratio:''},{name:'',ratio:''},{name:'',ratio:''}];
-    renderRecipeRows();
+    state.recipeG.r1 = emptyRecipeRows();
+    state.recipeG.t1 = emptyRecipeRows();
+    renderRecipeRowsG('r1');
+    renderRecipeRowsG('t1');
     document.getElementById('tf-time').value = '';
-    document.getElementById('tf-total-gram').value = '';
-    document.getElementById('gram-split-result').innerHTML = '';
+    document.getElementById('tf-total-gram-root').value = '';
+    document.getElementById('gram-split-result-root').innerHTML = '';
+    document.getElementById('tf-total-gram-tip').value = '';
+    document.getElementById('gram-split-result-tip').innerHTML = '';
     document.getElementById('tf-price').value = '';
     document.getElementById('tf-memo').value = '';
     document.getElementById('tf-delete-row').style.display = 'none';
@@ -1799,17 +1909,26 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     state.selectedOxidant = [];
     closeOxidantEditor();
     renderOxidantChips();
+    state.selectedPermRod = [];
+    closePermRodEditor();
+    renderPermRodChips();
+    state.selectedIron = [];
+    closeIronEditor();
+    renderIronChips();
     state.selectedApplication = [];
     closeApplicationEditor();
     renderApplicationChips();
     state.page2Enabled = false;
-    state.recipeRows2 = [];
+    state.recipeG.r2 = [];
+    state.recipeG.t2 = [];
     state.selectedOxidant2 = [];
     state.selectedApplication2 = [];
     state.selectedCare2 = [];
     document.getElementById('tf-time-2').value = '';
-    document.getElementById('tf-total-gram-2').value = '';
-    document.getElementById('gram-split-result-2').innerHTML = '';
+    document.getElementById('tf-total-gram-root-2').value = '';
+    document.getElementById('gram-split-result-root-2').innerHTML = '';
+    document.getElementById('tf-total-gram-tip-2').value = '';
+    document.getElementById('gram-split-result-tip-2').innerHTML = '';
     document.getElementById('time-picker-value-2').textContent = 'スクロールして選択（〜120分）';
     document.getElementById('page2-section').style.display = 'none';
     document.getElementById('page2-toggle-btn').textContent = '＋ 2回目の薬剤を追加';
@@ -1825,11 +1944,16 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     state.editingTreatmentId = id;
     pendingPhotos = { style: t.stylePhoto || null, before: t.beforePhoto || null, after: t.afterPhoto || null };
     document.getElementById('tf-date').value = t.date;
-    state.recipeRows = buildRecipeRowsFromTreatment(t);
-    renderRecipeRows();
+    var g1 = loadRecipeGroupsForRound(t, false);
+    state.recipeG.r1 = g1.rootRows;
+    state.recipeG.t1 = g1.tipRows;
+    renderRecipeRowsG('r1');
+    renderRecipeRowsG('t1');
     document.getElementById('tf-time').value = t.time || '';
-    document.getElementById('tf-total-gram').value = (t.totalGram || t.totalGram === 0) ? t.totalGram : '';
-    renderGramSplit();
+    document.getElementById('tf-total-gram-root').value = (t.totalGramRoot || t.totalGramRoot === 0) ? t.totalGramRoot : ((t.totalGram || t.totalGram === 0) ? t.totalGram : '');
+    document.getElementById('tf-total-gram-tip').value = (t.totalGramTip || t.totalGramTip === 0) ? t.totalGramTip : '';
+    renderGramSplitG('r1');
+    renderGramSplitG('t1');
     document.getElementById('tf-price').value = (t.price || t.price === 0) ? t.price : '';
     document.getElementById('tf-memo').value = t.memo || '';
     document.getElementById('tf-delete-row').style.display = 'block';
@@ -1846,27 +1970,43 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     state.selectedOxidant = (t.oxidantChoices || []).slice();
     closeOxidantEditor();
     renderOxidantChips();
+    state.selectedPermRod = (t.permRodChoices || []).slice();
+    closePermRodEditor();
+    renderPermRodChips();
+    state.selectedIron = (t.ironChoices || []).slice();
+    closeIronEditor();
+    renderIronChips();
     state.selectedApplication = (t.applicationMethods || []).slice();
     closeApplicationEditor();
     renderApplicationChips();
-    var hasPage2 = !!(t.page2Enabled || (t.recipeItems2 && t.recipeItems2.length) || (t.oxidantChoices2 && t.oxidantChoices2.length) || (t.applicationMethods2 && t.applicationMethods2.length) || (t.careChoices2 && t.careChoices2.length) || t.time2);
+    var hasPage2 = !!(t.page2Enabled || (t.recipeItems2 && t.recipeItems2.length) || (t.recipeItemsRoot2 && t.recipeItemsRoot2.length) || (t.recipeItemsTip2 && t.recipeItemsTip2.length) || (t.oxidantChoices2 && t.oxidantChoices2.length) || (t.applicationMethods2 && t.applicationMethods2.length) || (t.careChoices2 && t.careChoices2.length) || t.time2);
     state.page2Enabled = hasPage2;
-    state.recipeRows2 = hasPage2 ? buildRecipeRowsFromTreatment({ recipeItems: t.recipeItems2, recipe: t.recipe2 }) : [];
+    if(hasPage2){
+      var g2 = loadRecipeGroupsForRound(t, true);
+      state.recipeG.r2 = g2.rootRows;
+      state.recipeG.t2 = g2.tipRows;
+    } else {
+      state.recipeG.r2 = [];
+      state.recipeG.t2 = [];
+    }
     state.selectedOxidant2 = (t.oxidantChoices2 || []).slice();
     state.selectedApplication2 = (t.applicationMethods2 || []).slice();
     state.selectedCare2 = (t.careChoices2 || []).slice();
     document.getElementById('tf-time-2').value = t.time2 || '';
-    document.getElementById('tf-total-gram-2').value = (t.totalGram2 || t.totalGram2 === 0) ? t.totalGram2 : '';
+    document.getElementById('tf-total-gram-root-2').value = (t.totalGramRoot2 || t.totalGramRoot2 === 0) ? t.totalGramRoot2 : ((t.totalGram2 || t.totalGram2 === 0) ? t.totalGram2 : '');
+    document.getElementById('tf-total-gram-tip-2').value = (t.totalGramTip2 || t.totalGramTip2 === 0) ? t.totalGramTip2 : '';
     var page2Section = document.getElementById('page2-section');
     var page2Btn = document.getElementById('page2-toggle-btn');
     if(hasPage2){
       page2Section.style.display = 'block';
       page2Btn.textContent = '－ 2回目を閉じる';
-      renderRecipeRows2();
+      renderRecipeRowsG('r2');
+      renderRecipeRowsG('t2');
       renderOxidantChips2();
       renderApplicationChips2();
       renderCareChips2();
-      renderGramSplit2();
+      renderGramSplitG('r2');
+      renderGramSplitG('t2');
       var initMinutes2 = parseMinutesFromTimeText(t.time2);
       setTimeout(function(){ setTimePickerValue2(initMinutes2); }, 0);
     } else {
@@ -2036,6 +2176,15 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
   }
 
   // ---------- 施術メニュー：①カット・スパ・アレンジ / ②カラー・パーマ・ストレート・トリートメント ----------
+  // ---------- カテゴリ見出しタップでの開閉（表示の整理用） ----------
+  window.toggleChipsCollapse = function(chipsId, arrowId){
+    var el = document.getElementById(chipsId);
+    if(!el) return;
+    var collapsed = el.classList.toggle('collapsed');
+    var arrow = document.getElementById(arrowId);
+    if(arrow) arrow.classList.toggle('open', !collapsed);
+  };
+
   function renderMenuCatChips(catKey){
     var el = document.getElementById('menu-'+catKey+'-chips');
     if(!el) return;
@@ -2063,29 +2212,38 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     renderMenuCatChips(catKey);
   };
 
-  // ---------- 薬剤名・比率：追加編集可能な記入枠 ----------
+  // ---------- 薬剤名・比率：追加編集可能な記入枠（根本/毛先 × 1回目/2回目 の4グループ） ----------
   var RATIO_VALUES = ['1','2','3','4','5','6','7','8','9','10','1%','2%','5%','10%','15%','20%'];
-  var ratioScrollDebounce = {};
+  var ratioScrollDebounceG = {};
+  var GROUP_CONF = {
+    r1: { wrap:'recipe-rows-root',   totalInput:'tf-total-gram-root',   resultEl:'gram-split-result-root',   trackPrefix:'ratio-track-r1-' },
+    t1: { wrap:'recipe-rows-tip',    totalInput:'tf-total-gram-tip',    resultEl:'gram-split-result-tip',    trackPrefix:'ratio-track-t1-' },
+    r2: { wrap:'recipe-rows-root-2', totalInput:'tf-total-gram-root-2', resultEl:'gram-split-result-root-2', trackPrefix:'ratio-track-r2-' },
+    t2: { wrap:'recipe-rows-tip-2',  totalInput:'tf-total-gram-tip-2',  resultEl:'gram-split-result-tip-2',  trackPrefix:'ratio-track-t2-' }
+  };
 
-  function renderRecipeRows(){
-    var wrap = document.getElementById('recipe-rows');
+  function renderRecipeRowsG(g){
+    var conf = GROUP_CONF[g];
+    var wrap = document.getElementById(conf.wrap);
+    if(!wrap) return;
     var html = '';
-    state.recipeRows.forEach(function(row, i){
+    state.recipeG[g].forEach(function(row, i){
       if(i > 0){ html += '<span class="kt-recipe-colon-between">：</span>'; }
       html += '<div class="kt-recipe-pill">';
-      html += '<input type="text" class="kt-recipe-box kt-recipe-name-input" placeholder="薬剤名" value="'+escapeHtml(row.name)+'" oninput="updateRecipeRow('+i+',\'name\',this.value)">';
-      html += '<div class="kt-ratio-picker-wrap"><div class="kt-ratio-picker-track" id="ratio-picker-track-'+i+'"></div><div class="kt-ratio-picker-indicator"></div></div>';
-      html += '<button type="button" class="kt-recipe-del-mini" onclick="removeRecipeRow('+i+')" title="削除">✕</button>';
+      html += '<input type="text" class="kt-recipe-box kt-recipe-name-input" placeholder="薬剤名" value="'+escapeHtml(row.name)+'" oninput="updateRecipeRowG(\''+g+'\','+i+',\'name\',this.value)">';
+      html += '<div class="kt-ratio-picker-wrap"><div class="kt-ratio-picker-track" id="'+conf.trackPrefix+i+'"></div><div class="kt-ratio-picker-indicator"></div></div>';
+      html += '<button type="button" class="kt-recipe-del-mini" onclick="removeRecipeRowG(\''+g+'\','+i+')" title="削除">✕</button>';
       html += '</div>';
     });
     wrap.innerHTML = html;
     setTimeout(function(){
-      state.recipeRows.forEach(function(row, i){ buildRatioPicker(i); });
+      state.recipeG[g].forEach(function(row, i){ buildRatioPickerG(g, i); });
     }, 0);
   }
 
-  function buildRatioPicker(rowIndex){
-    var track = document.getElementById('ratio-picker-track-'+rowIndex);
+  function buildRatioPickerG(g, rowIndex){
+    var conf = GROUP_CONF[g];
+    var track = document.getElementById(conf.trackPrefix+rowIndex);
     if(!track) return;
     var wrap = track.parentElement;
     var wrapHeight = wrap.offsetHeight || 48;
@@ -2097,23 +2255,25 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     });
     html += '<div style="flex:0 0 '+pad+'px;"></div>';
     track.innerHTML = html;
-    track.onscroll = function(){ onRatioScroll(rowIndex); };
+    track.onscroll = function(){ onRatioScrollG(g, rowIndex); };
 
-    var current = state.recipeRows[rowIndex] ? String(state.recipeRows[rowIndex].ratio||'') : '';
+    var current = state.recipeG[g][rowIndex] ? String(state.recipeG[g][rowIndex].ratio||'') : '';
     if(RATIO_VALUES.indexOf(current) === -1) current = RATIO_VALUES[0];
     var item = track.querySelector('.kt-ratio-item[data-val="'+current+'"]');
     if(item){ track.scrollTop = item.offsetTop + item.offsetHeight / 2 - wrap.offsetHeight / 2; }
-    highlightRatioItem(rowIndex, true);
+    highlightRatioItemG(g, rowIndex, true);
   }
 
-  function onRatioScroll(rowIndex){
-    highlightRatioItem(rowIndex, false);
-    clearTimeout(ratioScrollDebounce[rowIndex]);
-    ratioScrollDebounce[rowIndex] = setTimeout(function(){ highlightRatioItem(rowIndex, true); }, 90);
+  function onRatioScrollG(g, rowIndex){
+    highlightRatioItemG(g, rowIndex, false);
+    var key = g+'_'+rowIndex;
+    clearTimeout(ratioScrollDebounceG[key]);
+    ratioScrollDebounceG[key] = setTimeout(function(){ highlightRatioItemG(g, rowIndex, true); }, 90);
   }
 
-  function highlightRatioItem(rowIndex, commit){
-    var track = document.getElementById('ratio-picker-track-'+rowIndex);
+  function highlightRatioItemG(g, rowIndex, commit){
+    var conf = GROUP_CONF[g];
+    var track = document.getElementById(conf.trackPrefix+rowIndex);
     if(!track) return;
     var wrap = track.parentElement;
     var center = track.scrollTop + wrap.offsetHeight / 2;
@@ -2127,26 +2287,26 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     items.forEach(function(it){ it.classList.remove('active'); });
     if(closest){
       closest.classList.add('active');
-      if(commit && state.recipeRows[rowIndex]){
-        state.recipeRows[rowIndex].ratio = closest.getAttribute('data-val');
-        renderGramSplit();
+      if(commit && state.recipeG[g][rowIndex]){
+        state.recipeG[g][rowIndex].ratio = closest.getAttribute('data-val');
+        renderGramSplitG(g);
       }
     }
   }
 
-  window.updateRecipeRow = function(index, field, value){
-    if(!state.recipeRows[index]) return;
-    state.recipeRows[index][field] = value;
-    renderGramSplit();
+  window.updateRecipeRowG = function(g, index, field, value){
+    if(!state.recipeG[g][index]) return;
+    state.recipeG[g][index][field] = value;
+    renderGramSplitG(g);
   };
-  window.addRecipeRow = function(){
-    state.recipeRows.push({ name:'', ratio:'' });
-    renderRecipeRows();
+  window.addRecipeRowG = function(g){
+    state.recipeG[g].push({ name:'', ratio:'' });
+    renderRecipeRowsG(g);
   };
-  window.removeRecipeRow = function(index){
-    state.recipeRows.splice(index, 1);
-    if(state.recipeRows.length === 0){ state.recipeRows.push({ name:'', ratio:'' }); }
-    renderRecipeRows();
+  window.removeRecipeRowG = function(g, index){
+    state.recipeG[g].splice(index, 1);
+    if(state.recipeG[g].length === 0){ state.recipeG[g].push({ name:'', ratio:'' }); }
+    renderRecipeRowsG(g);
   };
   function buildRecipeTextFromRows(rows){
     return rows
@@ -2158,7 +2318,6 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
   // ---------- 総合グラムを比率で自動配分 ----------
   function computeGramSplit(rows, totalStr){
     var total = parseFloat(totalStr);
-    var el = { html: '' };
     if(!total || total <= 0){
       return '<span style="color:var(--ink-soft);">薬剤名・比率（数値）と総合グラムを入力すると、自動で配分量を計算します</span>';
     }
@@ -2176,17 +2335,12 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     });
     return lines.join('<br>');
   }
-  window.renderGramSplit = function(){
-    var totalInput = document.getElementById('tf-total-gram');
-    var resultEl = document.getElementById('gram-split-result');
+  window.renderGramSplitG = function(g){
+    var conf = GROUP_CONF[g];
+    var totalInput = document.getElementById(conf.totalInput);
+    var resultEl = document.getElementById(conf.resultEl);
     if(!totalInput || !resultEl) return;
-    resultEl.innerHTML = computeGramSplit(state.recipeRows, totalInput.value);
-  };
-  window.renderGramSplit2 = function(){
-    var totalInput = document.getElementById('tf-total-gram-2');
-    var resultEl = document.getElementById('gram-split-result-2');
-    if(!totalInput || !resultEl) return;
-    resultEl.innerHTML = computeGramSplit(state.recipeRows2, totalInput.value);
+    resultEl.innerHTML = computeGramSplit(state.recipeG[g], totalInput.value);
   };
   function buildRecipeRowsFromTreatment(t){
     var rows = [];
@@ -2204,86 +2358,34 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     while(rows.length < 3){ rows.push({ name:'', ratio:'' }); }
     return rows;
   }
+  function emptyRecipeRows(){
+    return [{name:'',ratio:''},{name:'',ratio:''},{name:'',ratio:''}];
+  }
+  // 根本/毛先データを読み込む。新形式が無ければ旧形式（分割前）のデータを「根本」に割り当てて移行する
+  function loadRecipeGroupsForRound(t, isRound2){
+    var rootItemsKey = isRound2 ? 'recipeItemsRoot2' : 'recipeItemsRoot';
+    var rootTextKey = isRound2 ? 'recipeRoot2' : 'recipeRoot';
+    var tipItemsKey = isRound2 ? 'recipeItemsTip2' : 'recipeItemsTip';
+    var tipTextKey = isRound2 ? 'recipeTip2' : 'recipeTip';
+    var legacyItemsKey = isRound2 ? 'recipeItems2' : 'recipeItems';
+    var legacyTextKey = isRound2 ? 'recipe2' : 'recipe';
 
-  // ---------- 2回目の薬剤：薬剤名・比率（page2） ----------
-  function renderRecipeRows2(){
-    var wrap = document.getElementById('recipe-rows-2');
-    if(!wrap) return;
-    var html = '';
-    state.recipeRows2.forEach(function(row, i){
-      if(i > 0){ html += '<span class="kt-recipe-colon-between">：</span>'; }
-      html += '<div class="kt-recipe-pill">';
-      html += '<input type="text" class="kt-recipe-box kt-recipe-name-input" placeholder="薬剤名" value="'+escapeHtml(row.name)+'" oninput="updateRecipeRow2('+i+',\'name\',this.value)">';
-      html += '<div class="kt-ratio-picker-wrap"><div class="kt-ratio-picker-track" id="ratio-picker-track-2-'+i+'"></div><div class="kt-ratio-picker-indicator"></div></div>';
-      html += '<button type="button" class="kt-recipe-del-mini" onclick="removeRecipeRow2('+i+')" title="削除">✕</button>';
-      html += '</div>';
-    });
-    wrap.innerHTML = html;
-    setTimeout(function(){
-      state.recipeRows2.forEach(function(row, i){ buildRatioPicker2(i); });
-    }, 0);
-  }
-  function buildRatioPicker2(rowIndex){
-    var track = document.getElementById('ratio-picker-track-2-'+rowIndex);
-    if(!track) return;
-    var wrap = track.parentElement;
-    var wrapHeight = wrap.offsetHeight || 48;
-    var itemH = 18;
-    var pad = Math.max(0, (wrapHeight - itemH) / 2);
-    var html = '<div style="flex:0 0 '+pad+'px;"></div>';
-    RATIO_VALUES.forEach(function(v){
-      html += '<div class="kt-ratio-item" data-val="'+v+'">'+v+'</div>';
-    });
-    html += '<div style="flex:0 0 '+pad+'px;"></div>';
-    track.innerHTML = html;
-    track.onscroll = function(){ onRatioScroll2(rowIndex); };
-
-    var current = state.recipeRows2[rowIndex] ? String(state.recipeRows2[rowIndex].ratio||'') : '';
-    if(RATIO_VALUES.indexOf(current) === -1) current = RATIO_VALUES[0];
-    var item = track.querySelector('.kt-ratio-item[data-val="'+current+'"]');
-    if(item){ track.scrollTop = item.offsetTop + item.offsetHeight / 2 - wrap.offsetHeight / 2; }
-    highlightRatioItem2(rowIndex, true);
-  }
-  function onRatioScroll2(rowIndex){
-    highlightRatioItem2(rowIndex, false);
-    clearTimeout(ratioScrollDebounce['p2_'+rowIndex]);
-    ratioScrollDebounce['p2_'+rowIndex] = setTimeout(function(){ highlightRatioItem2(rowIndex, true); }, 90);
-  }
-  function highlightRatioItem2(rowIndex, commit){
-    var track = document.getElementById('ratio-picker-track-2-'+rowIndex);
-    if(!track) return;
-    var wrap = track.parentElement;
-    var center = track.scrollTop + wrap.offsetHeight / 2;
-    var items = track.querySelectorAll('.kt-ratio-item');
-    var closest = null, closestDist = Infinity;
-    items.forEach(function(it){
-      var itemCenter = it.offsetTop + it.offsetHeight / 2;
-      var dist = Math.abs(itemCenter - center);
-      if(dist < closestDist){ closestDist = dist; closest = it; }
-    });
-    items.forEach(function(it){ it.classList.remove('active'); });
-    if(closest){
-      closest.classList.add('active');
-      if(commit && state.recipeRows2[rowIndex]){
-        state.recipeRows2[rowIndex].ratio = closest.getAttribute('data-val');
-        renderGramSplit2();
-      }
+    var hasNewFormat = (t[rootItemsKey] && t[rootItemsKey].length) || t[rootTextKey] ||
+      (t[tipItemsKey] && t[tipItemsKey].length) || t[tipTextKey];
+    var rootRows, tipRows;
+    if(hasNewFormat){
+      rootRows = buildRecipeRowsFromTreatment({ recipeItems: t[rootItemsKey], recipe: t[rootTextKey] });
+      tipRows = buildRecipeRowsFromTreatment({ recipeItems: t[tipItemsKey], recipe: t[tipTextKey] });
+    } else if((t[legacyItemsKey] && t[legacyItemsKey].length) || t[legacyTextKey]){
+      rootRows = buildRecipeRowsFromTreatment({ recipeItems: t[legacyItemsKey], recipe: t[legacyTextKey] });
+      tipRows = emptyRecipeRows();
+    } else {
+      rootRows = emptyRecipeRows();
+      tipRows = emptyRecipeRows();
     }
+    return { rootRows: rootRows, tipRows: tipRows };
   }
-  window.updateRecipeRow2 = function(index, field, value){
-    if(!state.recipeRows2[index]) return;
-    state.recipeRows2[index][field] = value;
-    renderGramSplit2();
-  };
-  window.addRecipeRow2 = function(){
-    state.recipeRows2.push({ name:'', ratio:'' });
-    renderRecipeRows2();
-  };
-  window.removeRecipeRow2 = function(index){
-    state.recipeRows2.splice(index, 1);
-    if(state.recipeRows2.length === 0){ state.recipeRows2.push({ name:'', ratio:'' }); }
-    renderRecipeRows2();
-  };
+
 
   // ---------- 2回目の薬剤：ページ全体の表示切替 ----------
   window.togglePage2 = function(){
@@ -2293,10 +2395,10 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     if(state.page2Enabled){
       section.style.display = 'block';
       btn.textContent = '－ 2回目を閉じる';
-      if(state.recipeRows2.length === 0){
-        state.recipeRows2 = [{name:'',ratio:''},{name:'',ratio:''},{name:'',ratio:''}];
-      }
-      renderRecipeRows2();
+      if(state.recipeG.r2.length === 0){ state.recipeG.r2 = emptyRecipeRows(); }
+      if(state.recipeG.t2.length === 0){ state.recipeG.t2 = emptyRecipeRows(); }
+      renderRecipeRowsG('r2');
+      renderRecipeRowsG('t2');
       renderOxidantChips2();
       renderApplicationChips2();
       renderCareChips2();
@@ -2309,12 +2411,17 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
   };
   window.removePage2 = function(){
     if(!confirm('2回目の内容を削除しますか？')) return;
-    state.recipeRows2 = [];
+    state.recipeG.r2 = [];
+    state.recipeG.t2 = [];
     state.selectedOxidant2 = [];
     state.selectedApplication2 = [];
     state.selectedCare2 = [];
     state.page2Enabled = false;
     document.getElementById('tf-time-2').value = '';
+    document.getElementById('tf-total-gram-root-2').value = '';
+    document.getElementById('gram-split-result-root-2').innerHTML = '';
+    document.getElementById('tf-total-gram-tip-2').value = '';
+    document.getElementById('gram-split-result-tip-2').innerHTML = '';
     document.getElementById('time-picker-value-2').textContent = 'スクロールして選択（〜120分）';
     document.getElementById('page2-section').style.display = 'none';
     document.getElementById('page2-toggle-btn').textContent = '＋ 2回目の薬剤を追加';
@@ -2408,6 +2515,140 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
     renderOxidantEditorRows();
     renderOxidantChips();
     renderOxidantChips2();
+    toast('初期メニューに戻しました');
+  };
+
+  // ---------- パーマロッド（編集可能・複数選択） ----------
+  function renderPermRodChips(){
+    var el = document.getElementById('permrod-chips');
+    if(!el) return;
+    if(state.permRodItems.length === 0){
+      el.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);">項目が登録されていません。「編集」から追加できます。</div>';
+      return;
+    }
+    var html = '';
+    state.permRodItems.forEach(function(item, i){
+      var active = (state.selectedPermRod.indexOf(item) !== -1) ? ' active' : '';
+      html += '<button type="button" class="kt-menu-chip'+active+'" onclick="togglePermRodSelect('+i+')">'+escapeHtml(item)+'</button>';
+    });
+    el.innerHTML = html;
+  }
+  window.togglePermRodSelect = function(index){
+    var item = state.permRodItems[index];
+    if(!item) return;
+    var idx = state.selectedPermRod.indexOf(item);
+    if(idx !== -1){ state.selectedPermRod.splice(idx, 1); }
+    else { state.selectedPermRod.push(item); }
+    renderPermRodChips();
+  };
+  window.togglePermRodEditor = function(){
+    state.permRodEditorOpen = !state.permRodEditorOpen;
+    var panel = document.getElementById('permrod-editor');
+    var link = document.getElementById('permrod-edit-link');
+    if(state.permRodEditorOpen){ panel.style.display = 'block'; link.textContent = '閉じる'; renderPermRodEditorRows(); }
+    else { panel.style.display = 'none'; link.textContent = '編集'; }
+  };
+  function closePermRodEditor(){
+    state.permRodEditorOpen = false;
+    var panel = document.getElementById('permrod-editor');
+    var link = document.getElementById('permrod-edit-link');
+    if(panel) panel.style.display = 'none';
+    if(link) link.textContent = '編集';
+  }
+  function renderPermRodEditorRows(){
+    var wrap = document.getElementById('permrod-editor-rows');
+    var html = '';
+    state.permRodItems.forEach(function(item, i){
+      html += '<div class="kt-menu-edit-row">' +
+        '<input type="text" value="'+escapeHtml(item)+'" onchange="updatePermRodEditRow('+i+', this.value)">' +
+        '<button type="button" onclick="removePermRodEditRow('+i+')" title="削除">✕</button>' +
+      '</div>';
+    });
+    wrap.innerHTML = html;
+  }
+  window.updatePermRodEditRow = function(index, value){ state.permRodItems[index] = value; };
+  window.removePermRodEditRow = function(index){ state.permRodItems.splice(index, 1); renderPermRodEditorRows(); };
+  window.addPermRodEditRow = function(){ state.permRodItems.push('新しい項目'); renderPermRodEditorRows(); };
+  window.savePermRodItems = async function(){
+    state.permRodItems = state.permRodItems.map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+    await savePermRodItemsToStorage(state.permRodItems);
+    closePermRodEditor();
+    renderPermRodChips();
+    toast('パーマロッドを保存しました');
+  };
+  window.resetPermRodItems = async function(){
+    if(!confirm('パーマロッドを初期の項目に戻します。よろしいですか？')) return;
+    state.permRodItems = DEFAULT_PERMROD_ITEMS.slice();
+    await savePermRodItemsToStorage(state.permRodItems);
+    renderPermRodEditorRows();
+    renderPermRodChips();
+    toast('初期メニューに戻しました');
+  };
+
+  // ---------- アイロン＆温度（編集可能・複数選択） ----------
+  function renderIronChips(){
+    var el = document.getElementById('iron-chips');
+    if(!el) return;
+    if(state.ironItems.length === 0){
+      el.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);">項目が登録されていません。「編集」から追加できます。</div>';
+      return;
+    }
+    var html = '';
+    state.ironItems.forEach(function(item, i){
+      var active = (state.selectedIron.indexOf(item) !== -1) ? ' active' : '';
+      html += '<button type="button" class="kt-menu-chip'+active+'" onclick="toggleIronSelect('+i+')">'+escapeHtml(item)+'</button>';
+    });
+    el.innerHTML = html;
+  }
+  window.toggleIronSelect = function(index){
+    var item = state.ironItems[index];
+    if(!item) return;
+    var idx = state.selectedIron.indexOf(item);
+    if(idx !== -1){ state.selectedIron.splice(idx, 1); }
+    else { state.selectedIron.push(item); }
+    renderIronChips();
+  };
+  window.toggleIronEditor = function(){
+    state.ironEditorOpen = !state.ironEditorOpen;
+    var panel = document.getElementById('iron-editor');
+    var link = document.getElementById('iron-edit-link');
+    if(state.ironEditorOpen){ panel.style.display = 'block'; link.textContent = '閉じる'; renderIronEditorRows(); }
+    else { panel.style.display = 'none'; link.textContent = '編集'; }
+  };
+  function closeIronEditor(){
+    state.ironEditorOpen = false;
+    var panel = document.getElementById('iron-editor');
+    var link = document.getElementById('iron-edit-link');
+    if(panel) panel.style.display = 'none';
+    if(link) link.textContent = '編集';
+  }
+  function renderIronEditorRows(){
+    var wrap = document.getElementById('iron-editor-rows');
+    var html = '';
+    state.ironItems.forEach(function(item, i){
+      html += '<div class="kt-menu-edit-row">' +
+        '<input type="text" value="'+escapeHtml(item)+'" onchange="updateIronEditRow('+i+', this.value)">' +
+        '<button type="button" onclick="removeIronEditRow('+i+')" title="削除">✕</button>' +
+      '</div>';
+    });
+    wrap.innerHTML = html;
+  }
+  window.updateIronEditRow = function(index, value){ state.ironItems[index] = value; };
+  window.removeIronEditRow = function(index){ state.ironItems.splice(index, 1); renderIronEditorRows(); };
+  window.addIronEditRow = function(){ state.ironItems.push('新しい項目'); renderIronEditorRows(); };
+  window.saveIronItems = async function(){
+    state.ironItems = state.ironItems.map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+    await saveIronItemsToStorage(state.ironItems);
+    closeIronEditor();
+    renderIronChips();
+    toast('アイロン＆温度を保存しました');
+  };
+  window.resetIronItems = async function(){
+    if(!confirm('アイロン＆温度を初期の項目に戻します。よろしいですか？')) return;
+    state.ironItems = DEFAULT_IRON_ITEMS.slice();
+    await saveIronItemsToStorage(state.ironItems);
+    renderIronEditorRows();
+    renderIronChips();
     toast('初期メニューに戻しました');
   };
 
@@ -2936,29 +3177,41 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
 
   window.saveTreatment = async function(){
     var date = document.getElementById('tf-date').value || todayStr();
-    var recipeItems = state.recipeRows
-      .filter(function(r){ return r.name.trim() || r.ratio.trim(); })
-      .map(function(r){ return { name: r.name.trim(), ratio: r.ratio.trim() }; });
-    var recipe = buildRecipeTextFromRows(state.recipeRows);
+
+    function extractItems(rows){
+      return rows.filter(function(r){ return r.name.trim() || r.ratio.trim(); })
+        .map(function(r){ return { name: r.name.trim(), ratio: r.ratio.trim() }; });
+    }
+    var recipeItemsRoot = extractItems(state.recipeG.r1);
+    var recipeRoot = buildRecipeTextFromRows(state.recipeG.r1);
+    var recipeItemsTip = extractItems(state.recipeG.t1);
+    var recipeTip = buildRecipeTextFromRows(state.recipeG.t1);
+
     var menuChoices = state.selectedMenu.slice();
     var oxidantChoices = state.selectedOxidant.slice();
+    var permRodChoices = state.selectedPermRod.slice();
+    var ironChoices = state.selectedIron.slice();
     var applicationMethods = state.selectedApplication.slice();
 
     var page2Enabled = state.page2Enabled;
-    var recipeItems2 = page2Enabled ? state.recipeRows2
-      .filter(function(r){ return r.name.trim() || r.ratio.trim(); })
-      .map(function(r){ return { name: r.name.trim(), ratio: r.ratio.trim() }; }) : [];
-    var recipe2 = page2Enabled ? buildRecipeTextFromRows(state.recipeRows2) : '';
+    var recipeItemsRoot2 = page2Enabled ? extractItems(state.recipeG.r2) : [];
+    var recipeRoot2 = page2Enabled ? buildRecipeTextFromRows(state.recipeG.r2) : '';
+    var recipeItemsTip2 = page2Enabled ? extractItems(state.recipeG.t2) : [];
+    var recipeTip2 = page2Enabled ? buildRecipeTextFromRows(state.recipeG.t2) : '';
     var oxidantChoices2 = page2Enabled ? state.selectedOxidant2.slice() : [];
     var applicationMethods2 = page2Enabled ? state.selectedApplication2.slice() : [];
     var careChoices2 = page2Enabled ? state.selectedCare2.slice() : [];
     var time2 = page2Enabled ? document.getElementById('tf-time-2').value.trim() : '';
 
     var time = document.getElementById('tf-time').value.trim();
-    var totalGramRaw = document.getElementById('tf-total-gram').value;
-    var totalGram = totalGramRaw === '' ? null : Number(totalGramRaw);
-    var totalGram2Raw = page2Enabled ? document.getElementById('tf-total-gram-2').value : '';
-    var totalGram2 = (page2Enabled && totalGram2Raw !== '') ? Number(totalGram2Raw) : null;
+    var totalGramRootRaw = document.getElementById('tf-total-gram-root').value;
+    var totalGramRoot = totalGramRootRaw === '' ? null : Number(totalGramRootRaw);
+    var totalGramTipRaw = document.getElementById('tf-total-gram-tip').value;
+    var totalGramTip = totalGramTipRaw === '' ? null : Number(totalGramTipRaw);
+    var totalGramRoot2Raw = page2Enabled ? document.getElementById('tf-total-gram-root-2').value : '';
+    var totalGramRoot2 = (page2Enabled && totalGramRoot2Raw !== '') ? Number(totalGramRoot2Raw) : null;
+    var totalGramTip2Raw = page2Enabled ? document.getElementById('tf-total-gram-tip-2').value : '';
+    var totalGramTip2 = (page2Enabled && totalGramTip2Raw !== '') ? Number(totalGramTip2Raw) : null;
     var priceRaw = document.getElementById('tf-price').value;
     var price = priceRaw === '' ? null : Math.max(0, Math.round(Number(priceRaw)));
     var staff = document.getElementById('tf-staff').value.trim();
@@ -2967,14 +3220,32 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
 
     if(state.editingTreatmentId){
       var t = state.currentTreatments.find(function(x){ return x.id === state.editingTreatmentId; });
-      t.date = date; t.recipe = recipe; t.recipeItems = recipeItems; t.menuChoices = menuChoices; t.oxidantChoices = oxidantChoices; t.applicationMethods = applicationMethods; t.time = time; t.totalGram = totalGram; t.price = price; t.staff = staff; t.memo = memo;
-      t.page2Enabled = page2Enabled; t.recipe2 = recipe2; t.recipeItems2 = recipeItems2; t.oxidantChoices2 = oxidantChoices2; t.applicationMethods2 = applicationMethods2; t.careChoices2 = careChoices2; t.time2 = time2; t.totalGram2 = totalGram2;
+      t.date = date;
+      t.recipeItemsRoot = recipeItemsRoot; t.recipeRoot = recipeRoot;
+      t.recipeItemsTip = recipeItemsTip; t.recipeTip = recipeTip;
+      t.menuChoices = menuChoices; t.oxidantChoices = oxidantChoices; t.permRodChoices = permRodChoices; t.ironChoices = ironChoices; t.applicationMethods = applicationMethods;
+      t.time = time; t.totalGramRoot = totalGramRoot; t.totalGramTip = totalGramTip; t.price = price; t.staff = staff; t.memo = memo;
+      t.page2Enabled = page2Enabled;
+      t.recipeItemsRoot2 = recipeItemsRoot2; t.recipeRoot2 = recipeRoot2;
+      t.recipeItemsTip2 = recipeItemsTip2; t.recipeTip2 = recipeTip2;
+      t.oxidantChoices2 = oxidantChoices2; t.applicationMethods2 = applicationMethods2; t.careChoices2 = careChoices2;
+      t.time2 = time2; t.totalGramRoot2 = totalGramRoot2; t.totalGramTip2 = totalGramTip2;
+      // 旧フィールドは今後使わないが、古いバージョンとの互換のため空にしておく
+      t.recipe = ''; t.recipeItems = []; t.recipe2 = ''; t.recipeItems2 = []; t.totalGram = null; t.totalGram2 = null;
       t.beforePhoto = pendingPhotos.before; t.afterPhoto = pendingPhotos.after; t.stylePhoto = pendingPhotos.style;
     } else {
       state.currentTreatments.push({
         id: 't_' + Date.now() + '_' + Math.floor(Math.random()*1000),
-        date: date, recipe: recipe, recipeItems: recipeItems, menuChoices: menuChoices, oxidantChoices: oxidantChoices, applicationMethods: applicationMethods, time: time, totalGram: totalGram, price: price, staff: staff, memo: memo,
-        page2Enabled: page2Enabled, recipe2: recipe2, recipeItems2: recipeItems2, oxidantChoices2: oxidantChoices2, applicationMethods2: applicationMethods2, careChoices2: careChoices2, time2: time2, totalGram2: totalGram2,
+        date: date,
+        recipeItemsRoot: recipeItemsRoot, recipeRoot: recipeRoot,
+        recipeItemsTip: recipeItemsTip, recipeTip: recipeTip,
+        menuChoices: menuChoices, oxidantChoices: oxidantChoices, permRodChoices: permRodChoices, ironChoices: ironChoices, applicationMethods: applicationMethods,
+        time: time, totalGramRoot: totalGramRoot, totalGramTip: totalGramTip, price: price, staff: staff, memo: memo,
+        page2Enabled: page2Enabled,
+        recipeItemsRoot2: recipeItemsRoot2, recipeRoot2: recipeRoot2,
+        recipeItemsTip2: recipeItemsTip2, recipeTip2: recipeTip2,
+        oxidantChoices2: oxidantChoices2, applicationMethods2: applicationMethods2, careChoices2: careChoices2,
+        time2: time2, totalGramRoot2: totalGramRoot2, totalGramTip2: totalGramTip2,
         beforePhoto: pendingPhotos.before, afterPhoto: pendingPhotos.after, stylePhoto: pendingPhotos.style,
         createdAt: Date.now()
       });
@@ -3121,6 +3392,8 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
 
     state.staffList = await loadStaffList();
     state.oxidantItems = await loadOxidantItems();
+    state.permRodItems = await loadPermRodItems();
+    state.ironItems = await loadIronItems();
     state.applicationItems = await loadApplicationItems();
     var applicationChanged = false;
     APPLICATION_ITEMS_ADDED_2026_07.forEach(function(item){
