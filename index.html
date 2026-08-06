@@ -1145,14 +1145,65 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwKZ_dNSJ3B3esNuRy7
       method:'POST', mode:'no-cors',
       body:JSON.stringify({action:'bulkSet', items:items})
     }).then(function(){
-      // 送信中に新しい変更が入っていなければ「未送信」から取り除く（入っていれば次回に持ち越す）
-      keys.forEach(function(k){ if(_pending[k] === snapshot[k]) delete _pending[k]; });
-      savePendingToLS();
-      setSyncStatus('同期済み');
+      // no-corsではブラウザ側で本当に成功したか分からないため、サーバーに実際に反映されたかを確認してから確定する
+      verifyFlush(keys, snapshot);
     })
     .catch(function(){
       setSyncStatus('保存エラー（ローカルには保存済み・再接続時に自動送信します）');
     });
+  }
+
+  function verifyFlush(keys, snapshot){
+    setSyncStatus('確認中…');
+    var done = false;
+    var cb = 'karteVerify_'+Date.now()+'_'+Math.floor(Math.random()*9999);
+    var t = setTimeout(function(){
+      if(!done){ done=true; delete window[cb];
+        setSyncStatus('保存エラー（確認できず・再送信します）');
+        clearTimeout(_saveTimer);
+        _saveTimer = setTimeout(flush, 3000);
+      }
+    }, 8000);
+    window[cb] = function(data){
+      clearTimeout(t);
+      if(done) return;
+      done = true;
+      delete window[cb];
+      sc && sc.remove();
+      var serverMap = {};
+      if(data && data.items){
+        data.items.forEach(function(it){ serverMap[it.key] = it.value; });
+      }
+      var allOk = true;
+      keys.forEach(function(k){
+        if(snapshot[k].action === 'delete'){
+          if(serverMap.hasOwnProperty(k)) allOk = false;
+        } else {
+          if(serverMap[k] !== snapshot[k].value) allOk = false;
+        }
+      });
+      if(allOk){
+        keys.forEach(function(k){ if(_pending[k] === snapshot[k]) delete _pending[k]; });
+        savePendingToLS();
+        setSyncStatus('同期済み');
+      } else {
+        // サーバーにまだ正しく反映されていない → 未送信のまま残して再送信する
+        setSyncStatus('保存エラー（サーバー未反映・再送信します）');
+        clearTimeout(_saveTimer);
+        _saveTimer = setTimeout(flush, 3000);
+      }
+    };
+    var sc = document.createElement('script');
+    sc.src = KARTE_GAS_URL + '?action=list&callback=' + cb;
+    sc.onerror = function(){
+      clearTimeout(t);
+      if(!done){ done=true; delete window[cb];
+        setSyncStatus('保存エラー（確認できず・再送信します）');
+        clearTimeout(_saveTimer);
+        _saveTimer = setTimeout(flush, 3000);
+      }
+    };
+    document.head.appendChild(sc);
   }
 
   // タブを閉じる／バックグラウンドに移る直前にも、未送信分があれば即座に送信を試みる
