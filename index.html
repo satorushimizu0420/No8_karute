@@ -1194,7 +1194,7 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwEWH07H5rk2Zrj-6LI
       }
     };
     var sc = document.createElement('script');
-    sc.src = KARTE_GAS_URL + '?action=list&callback=' + cb;
+    sc.src = KARTE_GAS_URL + '?action=getKeys&keys=' + encodeURIComponent(keys.join(',')) + '&callback=' + cb;
     sc.onerror = function(){
       clearTimeout(t);
       if(!done){ done=true; delete window[cb];
@@ -1686,9 +1686,9 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwEWH07H5rk2Zrj-6LI
       html += '<div class="kt-history-item" onclick="openEditTreatment(\''+t.id+'\')">';
       html += '<div class="kt-history-head"><div class="kt-history-date">'+fmtDate(t.date)+(t.staff ? ' <span class="kt-history-staff">／ 担当：'+escapeHtml(t.staff)+'</span>' : '')+'</div><div class="kt-history-time">'+escapeHtml(t.time||'')+'</div></div>';
       html += '<div class="kt-photos">';
-      if(t.stylePhoto) html += '<div class="kt-photo-box"><img src="'+t.stylePhoto+'" onclick="event.stopPropagation();openPhotoViewLightbox(this.src)"><span class="kt-photo-tag kt-photo-tag-style">持参</span></div>';
-      html += '<div class="kt-photo-box">' + (t.beforePhoto ? '<img src="'+t.beforePhoto+'" onclick="event.stopPropagation();openPhotoViewLightbox(this.src)"><span class="kt-photo-tag">BEFORE</span>' : '<div class="kt-photo-empty">写真なし</div>') + '</div>';
-      html += '<div class="kt-photo-box">' + (t.afterPhoto ? '<img src="'+t.afterPhoto+'" onclick="event.stopPropagation();openPhotoViewLightbox(this.src)"><span class="kt-photo-tag">AFTER</span>' : '<div class="kt-photo-empty">写真なし</div>') + '</div>';
+      if(t.stylePhoto) html += '<div class="kt-photo-box"><img loading="lazy" src="'+t.stylePhoto+'" onclick="event.stopPropagation();openPhotoViewLightbox(this.src)"><span class="kt-photo-tag kt-photo-tag-style">持参</span></div>';
+      html += '<div class="kt-photo-box">' + (t.beforePhoto ? '<img loading="lazy" src="'+t.beforePhoto+'" onclick="event.stopPropagation();openPhotoViewLightbox(this.src)"><span class="kt-photo-tag">BEFORE</span>' : '<div class="kt-photo-empty">写真なし</div>') + '</div>';
+      html += '<div class="kt-photo-box">' + (t.afterPhoto ? '<img loading="lazy" src="'+t.afterPhoto+'" onclick="event.stopPropagation();openPhotoViewLightbox(this.src)"><span class="kt-photo-tag">AFTER</span>' : '<div class="kt-photo-empty">写真なし</div>') + '</div>';
       html += '</div>';
       html += '<div class="kt-history-body">';
       if(t.price || t.price === 0) html += '<div class="kt-history-price">お支払い　¥'+Number(t.price).toLocaleString('ja-JP')+'</div>';
@@ -1736,7 +1736,7 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwEWH07H5rk2Zrj-6LI
       '</div>';
     photos.forEach(function(p){
       html += '<div class="kt-cphoto-thumb" onclick="openCustomerPhotoLightbox(\''+p.id+'\')">' +
-        '<img src="'+p.dataUrl+'">' +
+        '<img loading="lazy" src="'+p.dataUrl+'">' +
         '<div class="kt-cphoto-date">'+fmtDate(p.date)+'</div>' +
       '</div>';
     });
@@ -3392,15 +3392,9 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwEWH07H5rk2Zrj-6LI
   // ---------- init ----------
   async function init(){
     var idx = await loadIndex();
-    if(idx.length === 0){
-      // seed with a couple of sample customers so the mockup is demonstrable
-      idx = [
-        { id:'c_seed_1', no:1, name:'山田 花子', kana:'ヤマダ ハナコ', phone:'090-1234-5678', memo:'頭皮が敏感。低刺激の薬剤を希望。', lastVisit: todayStr(), createdAt: Date.now() },
-        { id:'c_seed_2', no:2, name:'佐藤 美咲', kana:'サトウ ミサキ', phone:'080-9876-5432', memo:'', lastVisit: null, createdAt: Date.now() }
-      ];
-      await saveIndex(idx);
-      await saveMeta({ next: 3 });
-    }
+    // 注意：以前はここで「データが空なら見本の顧客を自動作成してサーバーに保存」していましたが、
+    // これが同期不具合やサーバー切替時にデータを誤って上書きする原因になっていたため廃止しました。
+    // データが空の場合は、単に「まだ顧客が登録されていません」の表示になります。
     state.customers = idx;
 
     // 5カテゴリのメニューボタンを読み込み。未作成なら旧バージョンから移行する
