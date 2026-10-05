@@ -1070,21 +1070,27 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwEWH07H5rk2Zrj-6LI
     }
   }
 
-  function loadFromGAS(){
+  // 起動時に毎回読み込む「軽いキー」の固定一覧（顧客数が増えても件数は変わらない）
+  // 顧客ごとの施術記録・写真（treatments:ID / customer-photos:ID）はここに含めず、
+  // 該当の顧客を開いたときだけ個別に取得する（ensureKeys）ことで、起動・保存のたびに
+  // 全員分の写真まで読みに行かずに済むようにしている。
+  var LIGHT_KEYS = [
+    'customers-index','meta:next-no','staff:list',
+    'menu:cat-cut','menu:cat-color','menu:cat-perm','menu:cat-treatment','menu:cat-arrange','menu:cat-care',
+    'menu:oxidant-presets','menu:application-presets','menu:permrod-presets','menu:iron-presets',
+    'menu:shampoo-presets','menu:concern-presets','menu:product-presets',
+    'menu:recipe-presets','menu:recipe-presets-a','menu:recipe-presets-b'
+  ];
+
+  /** 指定したキーだけをGASから取得して_cache/localStorageへ反映する汎用ヘルパー。成功/失敗をboolで返す */
+  function fetchKeysFromGAS(keys, timeoutMs){
     return new Promise(function(resolve){
-      // まずローカル保存分を必ず読み込んでおく（サーバー側に無いキーでも消えないように）
-      loadFromLS();
-      loadPendingFromLS();
-      if(!KARTE_GAS_URL || KARTE_GAS_URL.indexOf('http')!==0){
-        _cacheLoaded=true; resolve(); return;
-      }
-      setSyncStatus('同期中…');
+      if(!KARTE_GAS_URL || KARTE_GAS_URL.indexOf('http')!==0 || !keys || !keys.length){ resolve(false); return; }
       var done=false;
-      var cb='karteCb_'+Date.now()+'_'+Math.floor(Math.random()*9999);
+      var cb='karteKeys_'+Date.now()+'_'+Math.floor(Math.random()*9999);
       var t=setTimeout(function(){
-        if(!done){ done=true; delete window[cb];
-          _cacheLoaded=true; setSyncStatus(''); resolve(); scheduleFlushIfPending(); }
-      },20000);
+        if(!done){ done=true; delete window[cb]; resolve(false); }
+      }, timeoutMs||20000);
       window[cb]=function(data){
         clearTimeout(t);
         if(!done){ done=true; delete window[cb]; sc&&sc.remove();
@@ -1096,18 +1102,31 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwEWH07H5rk2Zrj-6LI
               try{ localStorage.setItem(it.key, it.value); }catch(e){}
             });
           }
-          _cacheLoaded=true; setSyncStatus('同期済み'); resolve();
-          scheduleFlushIfPending();
+          resolve(true);
         }
       };
       var sc=document.createElement('script');
-      sc.src=KARTE_GAS_URL+'?action=list&callback='+cb;
-      sc.onerror=function(){
-        clearTimeout(t);
-        if(!done){ done=true; delete window[cb];
-          _cacheLoaded=true; setSyncStatus('オフライン'); resolve(); }
-      };
+      sc.src=KARTE_GAS_URL+'?action=getKeys&keys='+encodeURIComponent(keys.join(','))+'&callback='+cb;
+      sc.onerror=function(){ clearTimeout(t); if(!done){ done=true; delete window[cb]; resolve(false); } };
       document.head.appendChild(sc);
+    });
+  }
+
+  function loadFromGAS(){
+    return new Promise(function(resolve){
+      // まずローカル保存分を必ず読み込んでおく（サーバー側に無いキーでも消えないように）
+      loadFromLS();
+      loadPendingFromLS();
+      if(!KARTE_GAS_URL || KARTE_GAS_URL.indexOf('http')!==0){
+        _cacheLoaded=true; resolve(); return;
+      }
+      setSyncStatus('同期中…');
+      fetchKeysFromGAS(LIGHT_KEYS, 20000).then(function(ok){
+        _cacheLoaded=true;
+        setSyncStatus(ok ? '同期済み' : 'オフライン');
+        resolve();
+        scheduleFlushIfPending();
+      });
     });
   }
 
@@ -1115,6 +1134,41 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwEWH07H5rk2Zrj-6LI
     if(_cacheLoaded) return Promise.resolve();
     if(!_loadPromise) _loadPromise=loadFromGAS();
     return _loadPromise;
+  }
+
+  /** 顧客ごとの重いデータ（施術記録・写真）を、その顧客を開いたときだけ個別に取得する */
+  function ensureKeysLoaded(keys){
+    return ensureLoaded().then(function(){
+      return fetchKeysFromGAS(keys, 20000);
+    });
+  }
+
+  /** バックアップ用：通常の起動時読み込みとは別に、サーバー上の全データを直接取得する */
+  function fetchAllForBackup(){
+    return new Promise(function(resolve){
+      var localData = {};
+      for(var i=0;i<localStorage.length;i++){
+        var k = localStorage.key(i);
+        if(k && k !== PENDING_LS_KEY) localData[k] = localStorage.getItem(k);
+      }
+      if(!KARTE_GAS_URL || KARTE_GAS_URL.indexOf('http')!==0){ resolve(localData); return; }
+      var done=false;
+      var cb='karteBackup_'+Date.now()+'_'+Math.floor(Math.random()*9999);
+      var t=setTimeout(function(){ if(!done){ done=true; delete window[cb]; resolve(localData); } }, 30000);
+      window[cb]=function(data){
+        clearTimeout(t);
+        if(!done){ done=true; delete window[cb]; sc&&sc.remove();
+          if(data&&data.items){
+            data.items.forEach(function(it){ localData[it.key]=it.value; });
+          }
+          resolve(localData);
+        }
+      };
+      var sc=document.createElement('script');
+      sc.src=KARTE_GAS_URL+'?action=list&callback='+cb;
+      sc.onerror=function(){ clearTimeout(t); if(!done){ done=true; delete window[cb]; resolve(localData); } };
+      document.head.appendChild(sc);
+    });
   }
 
   function scheduleFlushIfPending(){
@@ -1245,6 +1299,14 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwEWH07H5rk2Zrj-6LI
         return !prefix || k.startsWith(prefix);
       });
       return {keys:keys};
+    },
+    // 特定のキー（顧客ごとの施術記録・写真など）だけを個別に取得する
+    ensureKeys: async function(keys){
+      await ensureKeysLoaded(keys);
+    },
+    // バックアップ専用：サーバー上の全データを取得する（通常の起動時読み込みより重いので、明示的に呼んだときだけ使う）
+    fetchAllForBackup: async function(){
+      return await fetchAllForBackup();
     }
   };
 })();
@@ -1668,6 +1730,8 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwEWH07H5rk2Zrj-6LI
 
     showScreen('screen-detail');
     document.getElementById('history-list').innerHTML = '<div class="kt-history-empty-note">読み込み中…</div>';
+    // この顧客の施術記録・写真だけをサーバーから取得する（全顧客分を読みに行かない）
+    await window.storage.ensureKeys(['treatments:'+id, 'customer-photos:'+id]);
     state.currentTreatments = await loadTreatments(id);
     renderHistory();
     state.currentCustomerPhotos = await loadCustomerPhotos(id);
@@ -3334,14 +3398,9 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwEWH07H5rk2Zrj-6LI
   // ---------- データのバックアップ／復元 ----------
   window.exportBackup = async function(){
     try{
-      toast('バックアップを準備中…');
-      var listResult = await window.storage.list('');
-      var keys = (listResult && listResult.keys) ? listResult.keys : [];
-      var data = {};
-      for(var i=0;i<keys.length;i++){
-        var r = await window.storage.get(keys[i]);
-        if(r && r.value !== undefined) data[keys[i]] = r.value;
-      }
+      toast('バックアップを準備中…（全データを取得しています）');
+      var data = await window.storage.fetchAllForBackup();
+      var keys = Object.keys(data);
       var payload = { app:'no8-karute', exportedAt: new Date().toISOString(), data: data };
       var blob = new Blob([JSON.stringify(payload)], {type:'application/json'});
       var url = URL.createObjectURL(blob);
