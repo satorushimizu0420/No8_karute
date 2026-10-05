@@ -1084,7 +1084,7 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwEWH07H5rk2Zrj-6LI
       var t=setTimeout(function(){
         if(!done){ done=true; delete window[cb];
           _cacheLoaded=true; setSyncStatus(''); resolve(); scheduleFlushIfPending(); }
-      },6000);
+      },20000);
       window[cb]=function(data){
         clearTimeout(t);
         if(!done){ done=true; delete window[cb]; sc&&sc.remove();
@@ -1163,7 +1163,7 @@ var KARTE_GAS_URL = "https://script.google.com/macros/s/AKfycbwEWH07H5rk2Zrj-6LI
         clearTimeout(_saveTimer);
         _saveTimer = setTimeout(flush, 3000);
       }
-    }, 8000);
+    }, 25000);
     window[cb] = function(data){
       clearTimeout(t);
       if(done) return;
